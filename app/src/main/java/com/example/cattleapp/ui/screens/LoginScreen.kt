@@ -60,14 +60,14 @@ fun LoginScreen(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(60.dp))
                 Image(
-                    painter = painterResource(id = R.drawable.img_5), // Your app logo
+                    painter = painterResource(id = R.drawable.img_6), // Your app logo
                     contentDescription = "Bharat Pashudhan Logo",
                     modifier = Modifier.size(90.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = "Bharat Pashudhan",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )

@@ -31,7 +31,7 @@ import java.util.*
  * On "Capture" we save a temporary file and call viewModel.scanImageMock(filePath)
  */
 @Composable
-fun ScanScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
+fun ScanResultScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val lifecycleOwner = LocalContext.current as LifecycleOwner
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }

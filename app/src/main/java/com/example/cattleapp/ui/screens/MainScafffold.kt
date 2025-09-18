@@ -43,14 +43,15 @@ fun MainScaffold(navController: NavHostController, viewModel: MainViewModel) {
                     icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
                     label = { androidx.compose.material3.Text("Profile") }
                 )
+
             }
         }
     ) { padding ->
         NavHost(navController = innerNav, startDestination = "dashboard", modifier = Modifier.padding(padding)) {
             composable("dashboard") { DashboardScreen(navController = navController) }
-            composable("scan") { ScanScreen(navController = navController, viewModel = viewModel) }
-            composable("results") { ScanResultScreen(navController = navController, viewModel = viewModel) }
-            composable("database") { UserDatabaseScreen(viewModel = viewModel) }
+//            composable("scan") { ScanPlaceHolderScreen (navController = navController, viewModel = viewModel) }
+            composable("results") { ScanResultScreen2(navController = navController, viewModel = viewModel) }
+            composable("database") { UserDatabaseScreen(navController = navController,viewModel = viewModel) }
             composable("profile") { ProfileScreen(viewModel = viewModel) }
             composable("manage/{breedName}") { backStackEntry ->
                 val breed = backStackEntry.arguments?.getString("breedName") ?: "Unknown"

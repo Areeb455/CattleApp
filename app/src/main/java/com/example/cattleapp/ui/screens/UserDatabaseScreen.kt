@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.cattleapp.ui.components.CattleItem
 import com.example.cattleapp.viewmodel.CattleRecord
 import com.example.cattleapp.viewmodel.MainViewModel
@@ -21,6 +22,7 @@ import com.example.cattleapp.viewmodel.MainViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserDatabaseScreen(
+    navController: NavController,
     viewModel: MainViewModel = viewModel()
 ) {
     val list by viewModel.cattleRecords.collectAsState()
@@ -40,70 +42,94 @@ fun UserDatabaseScreen(
                 )
             )
         },
-        containerColor = Color.Black
+        containerColor = Color(0xFF121212)
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black) // solid black background
                 .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Text("Add New Entry", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                Text(" Add New Entry", style = MaterialTheme.typography.titleLarge.copy(color = Color(0xFF4CAF50)))
             }
 
-            // Form Fields
+            // Form Fields inside a Card
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val textFieldColors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedIndicatorColor = Color(0xFF4CAF50),
-                        unfocusedIndicatorColor = Color.Gray,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.Gray
-                    )
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
 
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text("Cattle Name") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = textFieldColors
-                    )
-                    OutlinedTextField(
-                        value = breed,
-                        onValueChange = { breed = it },
-                        label = { Text("Breed") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = textFieldColors
-                    )
-                    OutlinedTextField(
-                        value = nutrition,
-                        onValueChange = { nutrition = it },
-                        label = { Text("Nutritional Needs") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = textFieldColors
-                    )
-                    OutlinedTextField(
-                        value = injuries,
-                        onValueChange = { injuries = it },
-                        label = { Text("Injuries/Notes") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = textFieldColors
-                    )
-                    OutlinedTextField(
-                        value = yield,
-                        onValueChange = { yield = it },
-                        label = { Text("Milk Yield") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = textFieldColors
-                    )
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // Inside your Column of OutlinedTextFields
+                        val textFieldColors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color.White,
+                            focusedIndicatorColor = Color(0xFF4CAF50),   // Green border when focused
+                            unfocusedIndicatorColor = Color(0xFF4CAF50), // Green border when unfocused
+                            focusedLabelColor = Color(0xFF4CAF50),
+                            unfocusedLabelColor = Color.Gray
+                        )
+
+                        OutlinedTextField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Cattle id") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = textFieldColors,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = breed,
+                            onValueChange = { breed = it },
+                            label = { Text("User id") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = textFieldColors,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = nutrition,
+                            onValueChange = { nutrition = it },
+                            label = { Text("Tag Number") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = textFieldColors,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = injuries,
+                            onValueChange = { injuries = it },
+                            label = { Text("Species") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = textFieldColors,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = breed,
+                            onValueChange = { yield = it },
+                            label = { Text("Breed") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = textFieldColors,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+
+
+
+                    }
                 }
             }
 
@@ -118,24 +144,22 @@ fun UserDatabaseScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
-                        .padding(top = 8.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                        .height(56.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                    elevation = ButtonDefaults.buttonElevation(6.dp)
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add Entry", tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Save Entry", color = Color.White)
+                    Text("Save Entry", color = Color.White, style = MaterialTheme.typography.titleMedium)
                 }
             }
 
-            // Divider and Header for the list
+            // Records Header
             item {
                 Column {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Divider(color = Color.DarkGray, thickness = 1.dp)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Saved Cattle Records", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text("📋 Saved Cattle Records", style = MaterialTheme.typography.titleLarge.copy(color = Color.White))
                 }
             }
 
@@ -145,7 +169,7 @@ fun UserDatabaseScreen(
                     Box(
                         modifier = Modifier
                             .fillParentMaxWidth()
-                            .padding(vertical = 50.dp),
+                            .padding(vertical = 60.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text("No saved cattle yet.", color = Color.Gray)
@@ -153,9 +177,17 @@ fun UserDatabaseScreen(
                 }
             } else {
                 items(list) { item ->
-                    CattleItem(record = item)
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        CattleItem(record = item)
+                    }
                 }
             }
         }
     }
 }
+

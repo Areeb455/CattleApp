@@ -108,6 +108,15 @@ fun LoginScreen(
                         shape = RoundedCornerShape(12.dp),
                         colors = textFieldColors
                     )
+                    OutlinedTextField(
+                        value = userId,
+                        onValueChange = { userId = it },
+                        label = { Text("User Name") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = textFieldColors
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = password,

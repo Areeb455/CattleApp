@@ -13,6 +13,8 @@ import com.example.cattleapp.ui.screens.*
 import com.example.cattleapp.ui.theme.CattleAppTheme
 import com.example.cattleapp.viewmodel.MainViewModel
 
+
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,11 +39,11 @@ class MainActivity : ComponentActivity() {
 
                     // Individual screens (optional direct access)
                     composable("scan") {
-                        ScanScreen(navController = navController, viewModel = vm)
+                       ScanPlaceHolderScreen(navController = navController, viewModel = vm)
                     }
 
                     composable("results") {
-                        ScanResultScreen(navController = navController, viewModel = vm)
+                        ScanResultScreen2(navController = navController, viewModel = vm)
                     }
 
                     composable(

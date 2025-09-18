@@ -105,7 +105,7 @@ fun MainApp() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { DashboardScreen(navController = navController) }
-            composable("database") { UserDatabaseScreen() }
+            composable("database") { UserDatabaseScreen(navController = navController) }
             composable("profile") { ProfileScreen() }
 
             // 2. Added the CattleManagementScreen route here

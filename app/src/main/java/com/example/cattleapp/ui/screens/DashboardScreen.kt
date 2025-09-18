@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -32,67 +33,68 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Bharat Pashudhan", style = MaterialTheme.typography.headlineMedium, color = Color.White) },
+                title = {
+                    Text(
+                        "Bharat Pashudhan",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White
+                    )
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Black
                 )
             )
         },
-        containerColor = Color.Black
+        containerColor = Color.Black // 🔹 Full black background
     ) { padding ->
 
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color.Black)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Column(
+            // Full-width Image
+            Image(
+                painter = painterResource(id = R.drawable.img_1),
+                contentDescription = "Dashboard image",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(10.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.img_1),
-                        contentDescription = "Dashboard image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                    .fillMaxWidth()
+                    .height(220.dp)
+            )
 
-                Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp)) // space between image & text
 
-                Text(
-                    "Smart Cattle Recognition",
-                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
-                    color = Color.LightGray
+            Text(
+                "Smart Cattle Recognition",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
                 )
+            )
 
-                Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(28.dp)) // space between text & button
 
-                // Enhanced Scan Card
-                Button(
-                    onClick = { navController.navigate("manage/DummyBreed") },
-                    modifier = Modifier
-                        .width(300.dp)
-                        .height(55.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50),
-                        contentColor = Color.White
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(6.dp)
-                ) {
-                    Text("Scan Animal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                }
+            // Main Action Button
+            ElevatedButton(
+                onClick = { navController.navigate("results") },
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(60.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.elevatedButtonColors(containerColor = Color(0xFF4CAF50)),
+                elevation = ButtonDefaults.buttonElevation(10.dp)
+            ) {
+                Text(
+                    "🚀 Scan Animal",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
             }
         }
     }

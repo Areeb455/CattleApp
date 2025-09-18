@@ -43,6 +43,24 @@ class MainViewModel : ViewModel() {
     fun updateUser(name: String, phone: String, location: String? = null) {
         _user.value = UserProfile(name = name, phone = phone, location = location)
     }
+    fun loadDummySuggestions() {
+        val suggestions = listOf(
+            BreedSuggestion(1, "Gir", 0.92),
+            BreedSuggestion(2, "Sahiwal", 0.85),
+            BreedSuggestion(3, "Murrah", 0.78)
+        )
+        _breedSuggestions.value = suggestions
+        _showGeoPopup.value = true
+        _geoSuggestedBreed.value = null
+    }
+
+    fun showGeoForDummy() {
+        val first = _breedSuggestions.value.firstOrNull()
+        if (first != null) {
+            _geoSuggestedBreed.value = first
+            _showGeoPopup.value = true
+        }
+    }
 
     fun addCattle(record: CattleRecord) {
         _cattleRecords.value = _cattleRecords.value + record
@@ -64,6 +82,7 @@ class MainViewModel : ViewModel() {
     fun scanImageMock(imagePath: String) {
         viewModelScope.launch {
             val pool = listOf("Gir", "Sahiwal", "Murrah", "Jersey", "Holstein", "Tharparkar")
+
             val suggestions = (0..2).map { i ->
                 val name = pool[Random.nextInt(pool.size)]
                 val confidence = Random.nextDouble(0.45, 0.96)
@@ -72,22 +91,12 @@ class MainViewModel : ViewModel() {
 
             _breedSuggestions.value = suggestions
 
-            if (suggestions.size >= 2) {
-                val top = suggestions[0].confidence
-                val second = suggestions[1].confidence
-                if ((top - second) < geoThreshold) {
-                    // Demo logic: if user has a location, bias to second, else first
-                    val geoPick = if ((_user.value?.location?.isNotBlank() == true)) suggestions[1] else suggestions[0]
-                    _geoSuggestedBreed.value = geoPick
-                    _showGeoPopup.value = true
-                } else {
-                    _showGeoPopup.value = false
-                    _geoSuggestedBreed.value = null
-                }
-            } else {
-                _showGeoPopup.value = false
-                _geoSuggestedBreed.value = null
-            }
+            // Always skip geo-popup logic
+            _showGeoPopup.value = false
+            _geoSuggestedBreed.value = null
         }
     }
-}
+
+
+    }
+

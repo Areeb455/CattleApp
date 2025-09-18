@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cattleapp.R
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CattleManagementScreen(
@@ -74,9 +75,10 @@ fun CattleManagementScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Action cards now have borders and updated icons
-            ManagementActionCard(title = "Health Monitoring", icon = Icons.Default.FavoriteBorder) { /*TODO*/ }
-            ManagementActionCard(title = "Disease Control", icon = Icons.Default.Add) { /*TODO*/ }
-            ManagementActionCard(title = "Nutrition Planning", icon = Icons.Default.Check) { /*TODO*/ }
+            ManagementActionCard(title = "Breeding Tract", icon = Icons.Default.FavoriteBorder) { /*TODO*/ }
+            ManagementActionCard(title = "Species", icon = Icons.Default.Add) { /*TODO*/ }
+            ManagementActionCard(title = "Physical Description", icon = Icons.Default.Check) { /*TODO*/ }
+            ManagementActionCard(title = "Main Uses", icon = Icons.Default.KeyboardArrowDown) { /*TODO*/ }
 
             Spacer(modifier = Modifier.height(20.dp))
 

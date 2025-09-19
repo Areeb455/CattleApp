@@ -67,6 +67,10 @@ class AuthViewModel @Inject constructor(
         return authRepo.getLocation()
     }
 
+    fun getPhoneNumber(): String {
+        return authRepo.getPhoneNumber()
+    }
+
     fun logout() {
         authRepo.logout()
         _loginState.value = UiState.Idle

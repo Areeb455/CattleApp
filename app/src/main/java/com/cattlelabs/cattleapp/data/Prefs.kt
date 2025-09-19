@@ -8,6 +8,9 @@ class Prefs(context: Context) {
     fun saveSession(userId: String, userName: String, phoneNumber: String, location: String) {
         prefs.edit()
             .putString("user_id", userId)
+            .putString("user_name", userName)
+            .putString("phone_number", phoneNumber)
+            .putString("location", location)
             .apply()
     }
 

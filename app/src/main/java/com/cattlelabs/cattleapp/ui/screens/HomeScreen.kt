@@ -1,10 +1,8 @@
 package com.cattlelabs.cattleapp.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -18,13 +16,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.cattlelabs.cattleapp.navigation.BottomNavOptions.Companion.bottomNavOptions
 import com.cattlelabs.cattleapp.navigation.CattleAppScreens
 import com.cattlelabs.cattleapp.ui.components.ActionCard
+import com.cattlelabs.cattleapp.ui.components.core.BottomNavBar
 import com.cattlelabs.cattleapp.ui.components.core.TopBar
 import com.cattlelabs.cattleapp.ui.theme.Green
 import com.cattlelabs.cattleapp.ui.theme.LightGreen
@@ -40,11 +39,18 @@ fun HomeScreen(
     val displayName = viewModel.getUserName()
     val location = viewModel.getLocation()
 
-    Scaffold(topBar = {
-        TopBar(title = " 👋  Hi, $displayName!")
-    }) { paddingValues ->
+    Scaffold(
+        topBar = {
+            TopBar(title = " 👋  Hi, $displayName!")
+        },
+        bottomBar = {
+            BottomNavBar(navController = navController, bottomMenu = bottomNavOptions)
+        }
+    ) { paddingValues ->
         Surface(
-            modifier = Modifier.padding(paddingValues).fillMaxSize(),
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
         ) {
 

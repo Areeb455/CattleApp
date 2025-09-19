@@ -68,6 +68,10 @@ class AuthRepo @Inject constructor(
         return prefs.getLocation() ?: "Unknown"
     }
 
+    fun getPhoneNumber(): String {
+        return prefs.getPhoneNumber() ?: "Unknown"
+    }
+
     fun logout() {
         prefs.clearSession()
     }

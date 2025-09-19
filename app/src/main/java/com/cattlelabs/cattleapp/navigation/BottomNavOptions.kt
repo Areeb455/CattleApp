@@ -1,8 +1,10 @@
 package com.cattlelabs.cattleapp.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,10 +31,23 @@ sealed class BottomNavOptions(
         }
     )
 
+    data object PastRecordsScreen: BottomNavOptions(
+        route = CattleAppScreens.PastRecordsScreen.route,
+        labelOfIcon = "PastRecords",
+        unselectedIcon = Icons.Outlined.History,
+        selectedIcon = Icons.Filled.History,
+        onOptionClicked = {
+            it.navigate(CattleAppScreens.PastRecordsScreen.route) {
+                popUpTo(it.graph.startDestinationId)
+                launchSingleTop = true
+            }
+        }
+    )
+
     data object ProfileScreen: BottomNavOptions(
         route = CattleAppScreens.ProfileScreen.route,
         labelOfIcon = "Profile",
-        unselectedIcon = Icons.Outlined.Person,
+        unselectedIcon = Icons.Filled.Person,
         selectedIcon = Icons.Filled.Person,
         onOptionClicked = {
             it.navigate(CattleAppScreens.ProfileScreen.route) {
@@ -45,6 +60,7 @@ sealed class BottomNavOptions(
     companion object {
         val bottomNavOptions = listOf(
             HomeScreen,
+            PastRecordsScreen,
             ProfileScreen
         )
     }

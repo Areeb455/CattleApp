@@ -1,4 +1,4 @@
-package com.cattlelabs.cattleapp.navigation
+package com.cattlelabs.cattleapp.ui.components.core
 
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -8,6 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.cattlelabs.cattleapp.navigation.BottomNavOptions
+import com.cattlelabs.cattleapp.ui.theme.Green
+import com.cattlelabs.cattleapp.ui.theme.LightGreen
 
 @Composable
 fun BottomNavBar(
@@ -28,13 +31,14 @@ fun BottomNavBar(
                 icon = {
                     Icon(
                         imageVector = if (selected) menuItem.selectedIcon else menuItem.unselectedIcon,
-                        contentDescription = menuItem.labelOfIcon
+                        contentDescription = menuItem.labelOfIcon,
+                        tint = if (selected) Green else Color.Gray
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent,
-                    selectedIconColor = Color.Black,
-                    unselectedIconColor = Color.Gray
+                    indicatorColor = LightGreen,
+                    selectedIconColor = Green,
+                    unselectedIconColor = LightGreen
                 )
             )
         }

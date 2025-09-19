@@ -1,158 +1,138 @@
 package com.cattlelabs.cattleapp.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.cattlelabs.cattleapp.data.Prefs
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.cattlelabs.cattleapp.navigation.BottomNavOptions.Companion.bottomNavOptions
+import com.cattlelabs.cattleapp.navigation.CattleAppScreens
+import com.cattlelabs.cattleapp.ui.components.ActionCard
+import com.cattlelabs.cattleapp.ui.components.core.BottomNavBar
+import com.cattlelabs.cattleapp.ui.components.core.TopBar
+import com.cattlelabs.cattleapp.ui.theme.Green
+import com.cattlelabs.cattleapp.ui.theme.LightGreen
+import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
+import com.cattlelabs.cattleapp.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onBackClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-    val prefs = Prefs(context)
 
-    // Get user data from SharedPreferences
-    val userName = prefs.getUserName() ?: "Guest User"
-    val phoneNumber = prefs.getPhoneNumber() ?: "No phone number"
+    val displayName = viewModel.getUserName()
+    val userName = viewModel.getUserName()
+    val location = viewModel.getLocation()
+    val phoneNumber = viewModel.getPhoneNumber()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        // Top App Bar
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            shape = RoundedCornerShape(0.dp)
+    Scaffold(
+        topBar = {
+            TopBar(title = "Profile")
+        },
+        bottomBar = {
+            BottomNavBar(navController = navController, bottomMenu = bottomNavOptions)
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            color = MaterialTheme.colorScheme.background,
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.Black
-                    )
+
+
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(color = LightGreen)
+                        ) {
+                            Text(
+                                text = displayName[0].toString(),
+                                fontFamily = metropolisFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 36.sp,
+                                color = Color.White,
+                                modifier = Modifier.padding(32.dp)
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
+                item {
+                    ActionCard(
+                        color = Green,
+                        icon = Icons.Default.QrCodeScanner,
+                        text = "Scan Cattle",
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        navController.navigate(CattleAppScreens.CattleScanScreen.route)
+                    }
+                }
 
-                Text(
-                    text = "Profile",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(2f)
-                )
+                item {
+                    ActionCard(
+                        color = LightGreen,
+                        icon = Icons.Default.EditNote,
+                        text = "Manual Registration",
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        navController.navigate(CattleAppScreens.CattleScanScreen.route)
+                    }
+                }
 
-                Spacer(modifier = Modifier.weight(1f))
+                item {
+                    Button(onClick = {
+                        viewModel.logout()
+                        navController.navigate(CattleAppScreens.LoginScreen.route) {
+                            popUpTo(CattleAppScreens.HomeScreen.route) {
+                                inclusive = true
+                            }
+                        }
+                    }) {
+                        Text(text = "Logout")
+                    }
+                }
+
             }
-        }
-
-        // Main Content
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(32.dp)
-        ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Profile Picture
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape)
-                    .border(4.dp, Color(0xFF4CAF50), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face")
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = android.R.drawable.ic_menu_camera),
-                    error = painterResource(id = android.R.drawable.ic_menu_camera)
-                )
-            }
-
-            // User Info
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = userName,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-
-                Text(
-                    text = phoneNumber,
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Logout Button
-            Button(
-                onClick = onLogoutClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50)
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "Logout",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.height(60.dp))
         }
     }
+
 }

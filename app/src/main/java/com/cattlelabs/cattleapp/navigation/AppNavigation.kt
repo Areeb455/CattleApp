@@ -43,21 +43,13 @@ fun AppNavigation(
             HomeScreen(navController = navController)
         }
 
-//        composable(route = CattleAppScreens.ProfileScreen.route) {
-//            ProfileScreen(
-//                onBackClick = {
-//                    navController.popBackStack()
-//                },
-//                onLogoutClick = {
-//                    Prefs(localContext).clearSession()
-//                    navController.navigate(CattleAppScreens.LoginScreen.route) {
-//                        popUpTo(0) {
-//                            inclusive = true
-//                        }
-//                    }
-//                }
-//            )
-//        }
+        composable(route = CattleAppScreens.PastRecordsScreen.route) {
+            PastRecordsScreen(navController = navController)
+        }
+
+        composable(route = CattleAppScreens.ProfileScreen.route) {
+            ProfileScreen(navController = navController)
+        }
 //
 //        // Fixed: Use CattleScannerScreen instead of AnimalScanScreen
 //        composable(route = CattleAppScreens.AnimalScanScreen.route) {

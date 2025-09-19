@@ -1,36 +1,93 @@
 package com.cattlelabs.cattleapp.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Camera
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.cattlelabs.cattleapp.navigation.CattleAppScreens
+import com.cattlelabs.cattleapp.ui.components.ActionCard
 import com.cattlelabs.cattleapp.ui.components.core.TopBar
+import com.cattlelabs.cattleapp.ui.theme.Green
+import com.cattlelabs.cattleapp.ui.theme.LightGreen
+import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
+import com.cattlelabs.cattleapp.viewmodel.AuthViewModel
 
 @Composable
 fun HomeScreen(
-    onScanAnimalClick: () -> Unit,
-    onManualFormClick: () -> Unit
+    navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
 
+    val displayName = viewModel.getUserName()
+    val location = viewModel.getLocation()
+
+    Scaffold(topBar = {
+        TopBar(title = " 👋  Hi, $displayName!")
+    }) { paddingValues ->
+        Surface(
+            modifier = Modifier.padding(paddingValues).fillMaxSize(),
+            color = MaterialTheme.colorScheme.background,
+        ) {
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                item {
+                    Row(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.LocationOn, contentDescription = null)
+                        Text(
+                            text = " $location",
+                            fontFamily = metropolisFamily,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                item {
+                    ActionCard(
+                        color = Green,
+                        icon = Icons.Default.QrCodeScanner,
+                        text = "Scan Cattle",
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        navController.navigate(CattleAppScreens.CattleScanScreen.route)
+                    }
+                }
+
+                item {
+                    ActionCard(
+                        color = LightGreen,
+                        icon = Icons.Default.EditNote,
+                        text = "Manual Registration",
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        navController.navigate(CattleAppScreens.CattleScanScreen.route)
+                    }
+                }
+
+            }
+        }
+    }
 }

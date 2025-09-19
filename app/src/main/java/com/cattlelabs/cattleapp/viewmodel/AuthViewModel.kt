@@ -59,6 +59,14 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun getUserName(): String {
+        return authRepo.getUserName()
+    }
+
+    fun getLocation(): String {
+        return authRepo.getLocation()
+    }
+
     fun logout() {
         authRepo.logout()
         _loginState.value = UiState.Idle

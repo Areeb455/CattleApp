@@ -40,14 +40,7 @@ fun AppNavigation(
         }
 
         composable(route = CattleAppScreens.HomeScreen.route) {
-            HomeScreen(
-                onScanAnimalClick = {
-                    navController.navigate(CattleAppScreens.CattleScanScreen.route)
-                },
-                onManualFormClick = {
-                    navController.navigate(CattleAppScreens.CattleScanScreen.route)
-                }
-            )
+            HomeScreen(navController = navController)
         }
 
 //        composable(route = CattleAppScreens.ProfileScreen.route) {

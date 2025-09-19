@@ -60,6 +60,14 @@ class AuthRepo @Inject constructor(
         return prefs.getUserId()
     }
 
+    fun getUserName(): String {
+        return prefs.getUserName() ?: "Guest"
+    }
+
+    fun getLocation(): String {
+        return prefs.getLocation() ?: "Unknown"
+    }
+
     fun logout() {
         prefs.clearSession()
     }

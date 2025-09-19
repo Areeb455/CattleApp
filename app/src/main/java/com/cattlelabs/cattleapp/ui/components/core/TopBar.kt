@@ -8,7 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 
 
@@ -25,6 +27,8 @@ fun TopBar(
             Text(
                 text = title,
                 fontFamily = metropolisFamily,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

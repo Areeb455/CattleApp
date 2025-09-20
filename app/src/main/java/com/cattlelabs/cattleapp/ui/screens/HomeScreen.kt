@@ -100,7 +100,9 @@ fun HomeScreen(
                             Text(
                                 text = " $location",
                                 fontFamily = metropolisFamily,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+
+
                             )
                         }
 
@@ -109,12 +111,12 @@ fun HomeScreen(
                         )
 
                     }
-
                     item {
                         ActionCard(
                             color = Green,
                             icon = Icons.Default.QrCodeScanner,
                             text = "Scan Cattle",
+                            subtitle = "Scan to know your cattle breed predication", // <-- Add this line
                             modifier = Modifier.padding(16.dp)
                         ) {
                             navController.navigate(CattleAppScreens.CattleScannerScreen.route)
@@ -126,11 +128,13 @@ fun HomeScreen(
                             color = LightGreen,
                             icon = Icons.Default.EditNote,
                             text = "Manual Registration",
+                            subtitle = "Click here to register your cattle breed manually", // <-- Add this line
                             modifier = Modifier.padding(16.dp)
                         ) {
                             navController.navigate(CattleAppScreens.CattleFormScreen.route)
                         }
                     }
+
 
                 }
             }

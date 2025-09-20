@@ -10,5 +10,9 @@ data class Prediction(
     val breed: String?,
 
     @SerializedName("accuracy")
-    val accuracy: Float?
+    val accuracy: Float?,
+
+    @SerializedName("location")
+    val location: List<String>
+
 )

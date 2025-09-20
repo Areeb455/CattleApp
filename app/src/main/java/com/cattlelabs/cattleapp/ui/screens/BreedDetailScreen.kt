@@ -1,5 +1,6 @@
 package com.cattlelabs.cattleapp.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.cattlelabs.cattleapp.data.model.BreedDetails
+import com.cattlelabs.cattleapp.navigation.CattleAppScreens
 import com.cattlelabs.cattleapp.state.UiState
 import com.cattlelabs.cattleapp.ui.components.core.TopBar
 import com.cattlelabs.cattleapp.viewmodel.CattleViewModel

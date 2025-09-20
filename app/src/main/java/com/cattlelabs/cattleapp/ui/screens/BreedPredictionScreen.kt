@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,11 +43,13 @@ fun BreedPredictionScreen(
     viewModel: CattleViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val predictionState = viewModel.predictionState.collectAsState().value
+    val predictionState by viewModel.predictionState.collectAsState()
 
     LaunchedEffect(key1 = encodedUri) {
-        encodedUri?.let {
-            val decodedUri = Uri.decode(it).toUri()
+        // ✅ ADD THIS CHECK: Only call the API if the state is Idle.
+        // The ViewModel remembers the state (e.g., Success) when you navigate back.
+        if (encodedUri != null && viewModel.predictionState.value is UiState.Idle) {
+            val decodedUri = Uri.decode(encodedUri).toUri()
             viewModel.uploadAndPredict(context, decodedUri)
         }
     }
@@ -91,12 +94,6 @@ fun BreedPredictionScreen(
                         }
 
                         items(data.predictions) { prediction ->
-
-                            Log.d(
-                                "BreedDebug",
-                                "Processing prediction. Breed: '${prediction.breed}', Breed ID: '${prediction.breedId}'"
-                            )
-
                             PredictionItemCard(
                                 breedId = prediction.breedId,
                                 breed = prediction.breed,
@@ -107,7 +104,6 @@ fun BreedPredictionScreen(
                                         navController.navigate("${CattleAppScreens.CattleFormScreen.route}?breedName=$breedName")
                                     }
                                 },
-
                                 onDetailsClick = {
                                     prediction.breedId?.let { id ->
                                         navController.navigate("${CattleAppScreens.BreedDetailScreen.route}/$id")
@@ -131,7 +127,7 @@ fun BreedPredictionScreen(
                 }
 
                 else -> {
-                    Text("Preparing to analyze...")
+                    // This now correctly handles the Idle state before the API call
                 }
             }
         }

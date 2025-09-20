@@ -27,7 +27,7 @@ fun TopBar(
             Text(
                 text = title,
                 fontFamily = metropolisFamily,
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,

@@ -144,7 +144,7 @@ fun CattleRecordItem(cattle: Cattle) {
                 text = "Species: ${cattle.species}",
                 style = MaterialTheme.typography.bodyMedium
             )
-            // --- ADDED FIELDS ---
+
             cattle.sex?.let {
                 Text(
                     text = "Sex: $it",

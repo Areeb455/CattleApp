@@ -8,4 +8,5 @@ sealed class CattleAppScreens(val route: String) {
     object BreedPredictionScreen : CattleAppScreens("breed_prediction_screen")
     object CattleFormScreen : CattleAppScreens("cattle_form_screen")
     object PastRecordsScreen : CattleAppScreens("past_records_screen")
+    object BreedDetailScreen : CattleAppScreens("breed_detail_screen")
 }

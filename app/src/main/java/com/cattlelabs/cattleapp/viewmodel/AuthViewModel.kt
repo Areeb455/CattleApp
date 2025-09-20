@@ -63,6 +63,11 @@ class AuthViewModel @Inject constructor(
         return authRepo.getUserName()
     }
 
+    fun getCurrentUserId(): String? {
+        return authRepo.getCurrentUserId()
+    }
+
+
     fun getLocation(): String {
         return authRepo.getLocation()
     }

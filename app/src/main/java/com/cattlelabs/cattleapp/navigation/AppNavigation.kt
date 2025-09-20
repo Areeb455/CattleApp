@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cattlelabs.cattleapp.data.Prefs
+import com.cattlelabs.cattleapp.ui.screens.BreedDetailScreen
 import com.cattlelabs.cattleapp.ui.screens.BreedPredictionScreen
 import com.cattlelabs.cattleapp.ui.screens.CattleFormScreen
 import com.cattlelabs.cattleapp.ui.screens.CattleScannerScreen
@@ -63,8 +64,21 @@ fun AppNavigation(
             CattleScannerScreen(navController = navController)
         }
 
-        composable(route = CattleAppScreens.CattleFormScreen.route) {
-            CattleFormScreen(navController = navController)
+        composable(
+            route = "${CattleAppScreens.CattleFormScreen.route}?breedName={breedName}",
+            arguments = listOf(
+                navArgument("breedName") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val breedName = backStackEntry.arguments?.getString("breedName")
+            CattleFormScreen(
+                navController = navController,
+                breedName = breedName
+            )
         }
 
         composable(
@@ -78,6 +92,20 @@ fun AppNavigation(
             BreedPredictionScreen(
                 navController = navController,
                 encodedUri = encodedUri,
+            )
+        }
+
+        composable(
+            route = "${CattleAppScreens.BreedDetailScreen.route}/{breedId}",
+            arguments = listOf(
+                navArgument("breedId") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val breedId = backStackEntry.arguments?.getString("breedId")
+
+            BreedDetailScreen(
+                navController = navController,
+                breedId = breedId,
             )
         }
 

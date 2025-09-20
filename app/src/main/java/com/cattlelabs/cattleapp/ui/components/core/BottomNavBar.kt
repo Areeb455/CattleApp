@@ -17,7 +17,9 @@ fun BottomNavBar(
     navController: NavController,
     bottomMenu: List<BottomNavOptions>
 ) {
-    NavigationBar {
+    NavigationBar(
+        containerColor = LightGreen.copy(0.7f)
+    ) {
         val backStackEntry = navController.currentBackStackEntryAsState()
 
         bottomMenu.forEach { menuItem ->

@@ -1,13 +1,19 @@
 package com.cattlelabs.cattleapp.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -17,10 +23,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.navigation.BottomNavOptions.Companion.bottomNavOptions
 import com.cattlelabs.cattleapp.navigation.CattleAppScreens
 import com.cattlelabs.cattleapp.ui.components.ActionCard
@@ -42,7 +51,17 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopBar(title = " 👋  Hi, $displayName!")
+            TopBar(
+                title = " 👋 Hi, $displayName!",
+                actions = {
+                    Icon(
+                        imageVector = Icons.Default.NotificationsNone,
+                        contentDescription = null,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+            )
+
         },
         bottomBar = {
             BottomNavBar(navController = navController, bottomMenu = bottomNavOptions)
@@ -55,46 +74,65 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.background,
         ) {
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                item {
-                    Row(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Icon(imageVector = Icons.Default.LocationOn, contentDescription = null)
-                        Text(
-                            text = " $location",
-                            fontFamily = metropolisFamily,
-                            fontWeight = FontWeight.SemiBold
+            Box {
+
+                Image(
+                    painter = painterResource(R.drawable.bg1),
+                    contentDescription = null,
+                    modifier = Modifier
+
+                        .fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+
+
+                )
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 16.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    item {
+                        Row(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.LocationOn, contentDescription = null)
+                            Text(
+                                text = " $location",
+                                fontFamily = metropolisFamily,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(
+                            modifier = Modifier.height(108.dp)
                         )
-                    }
-                }
 
-                item {
-                    ActionCard(
-                        color = Green,
-                        icon = Icons.Default.QrCodeScanner,
-                        text = "Scan Cattle",
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        navController.navigate(CattleAppScreens.CattleScannerScreen.route)
                     }
-                }
 
-                item {
-                    ActionCard(
-                        color = LightGreen,
-                        icon = Icons.Default.EditNote,
-                        text = "Manual Registration",
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        navController.navigate(CattleAppScreens.CattleFormScreen.route)
+                    item {
+                        ActionCard(
+                            color = Green,
+                            icon = Icons.Default.QrCodeScanner,
+                            text = "Scan Cattle",
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            navController.navigate(CattleAppScreens.CattleScannerScreen.route)
+                        }
                     }
-                }
 
+                    item {
+                        ActionCard(
+                            color = LightGreen,
+                            icon = Icons.Default.EditNote,
+                            text = "Manual Registration",
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            navController.navigate(CattleAppScreens.CattleFormScreen.route)
+                        }
+                    }
+
+                }
             }
         }
     }

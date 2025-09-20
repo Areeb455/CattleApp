@@ -1,11 +1,15 @@
 package com.cattlelabs.cattleapp.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +32,9 @@ fun ActionCard(
 ) {
     Card(
         onClick = onCardClick,
-        modifier = modifier.padding(vertical = 4.dp, horizontal = 4.dp)
+        modifier = modifier
+            .padding(vertical = 4.dp, horizontal = 4.dp)
+            .border(width = 2.dp, color = Green, shape = RoundedCornerShape(16.dp)),
     ) {
         Row(
             Modifier

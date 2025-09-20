@@ -1,7 +1,7 @@
 package com.cattlelabs.cattleapp.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,9 +27,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,10 +44,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +60,8 @@ import androidx.navigation.NavController
 import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.state.UiState
+import com.cattlelabs.cattleapp.ui.components.core.TopBar
+import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 import com.cattlelabs.cattleapp.viewmodel.AuthViewModel
 import com.cattlelabs.cattleapp.viewmodel.CattleViewModel
 import kotlinx.coroutines.launch
@@ -75,7 +81,6 @@ fun CattleFormScreen(
     val addCattleState by viewModel.addCattleState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     // --- Form Fields State ---
     var name by remember { mutableStateOf("") }
@@ -118,6 +123,7 @@ fun CattleFormScreen(
         }
     }
 
+    // --- Handle API call result ---
     LaunchedEffect(addCattleState) {
         when (val state = addCattleState) {
             is UiState.Success -> {
@@ -128,121 +134,104 @@ fun CattleFormScreen(
             }
 
             is UiState.Failed -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar("Error: ${state.message}")
-                }
+                coroutineScope.launch { snackbarHostState.showSnackbar("Error: ${state.message}") }
             }
 
             is UiState.InternetError -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar("Please check your internet connection.")
-                }
+                coroutineScope.launch { snackbarHostState.showSnackbar("Please check your internet connection.") }
             }
 
             else -> {}
         }
-        // Reset state after handling to prevent re-triggering
         if (addCattleState !is UiState.Idle && addCattleState !is UiState.Loading) {
             viewModel.resetAddCattleState()
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color(0xFFF0F2F5)
-    ) { paddingValues ->
-
-            Image(
-                painter = painterResource(R.drawable.bg1),
-                contentDescription = "Background",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
-        Column(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(R.drawable.bg1),
+            contentDescription = "Background",
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-                Text(
-                    text = "Register Animal",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
+                .blur(radius = 8.dp) // Apply blur to the background
+                .drawWithContent {
+                    drawContent()
+                    drawRect(Color.Black.copy(alpha = 0.4f)) // Dark tint for readability
+                },
+            contentScale = ContentScale.Crop,
+        )
+
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            containerColor = Color.Transparent, // Make scaffold transparent
+            topBar = {
+                TopBar(
+                    title = "Cattle Registration",
+                    actions = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Default.ArrowBack, "Back")
+                        }
+                    }
                 )
-                Spacer(modifier = Modifier.size(48.dp)) // Balance the IconButton
             }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+            ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-
-
-                // --- Form Fields ---
-
-                // Tag Number (Required)
-                FormTextField(
-                    label = "Tag Number*",
-                    value = tagNumber,
-                    onValueChange = { tagNumber = it })
-
-                // Species (Required)
-                FormDropdown(
-                    label = "Species*",
-                    options = speciesOptions,
-                    selectedValue = selectedSpecies,
-                    onValueChange = { selectedSpecies = it },
-                    expanded = speciesExpanded,
-                    onExpandedChange = { speciesExpanded = it }
-                )
-
-                // Breed (Required)
-                FormDropdown(
-                    label = "Breed*",
-                    options = breedOptions,
-                    selectedValue = selectedBreed,
-                    onValueChange = { selectedBreed = it },
-                    expanded = breedExpanded,
-                    onExpandedChange = { breedExpanded = it }
-                )
-
-                // Animal Name (Optional)
-                FormTextField(
-                    label = "Name (Optional)",
-                    value = name,
-                    onValueChange = { name = it })
-
-                // Gender (Optional)
-                FormDropdown(
-                    label = "Gender (Optional)",
-                    options = genderOptions,
-                    selectedValue = selectedGender,
-                    onValueChange = { selectedGender = it },
-                    expanded = genderExpanded,
-                    onExpandedChange = { genderExpanded = it }
-                )
-
-                // Date of Birth (Optional)
-                DateTextField(
-                    label = "Date of Birth (Optional)",
-                    date = dob,
-                    onDateChange = { dob = it })
-
-                // Tagging Date (Optional)
-                DateTextField(
-                    label = "Tagging Date (Optional)",
-                    date = taggingDate,
-                    onDateChange = { taggingDate = it })
-
+                // --- Form Fields inside a Surface for contrast ---
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        FormTextField(
+                            label = "Tag Number",
+                            value = tagNumber,
+                            onValueChange = { tagNumber = it })
+                        FormDropdown(
+                            label = "Species",
+                            options = speciesOptions,
+                            selectedValue = selectedSpecies,
+                            onValueChange = { selectedSpecies = it },
+                            expanded = speciesExpanded,
+                            onExpandedChange = { speciesExpanded = it }
+                        )
+                        FormDropdown(
+                            label = "Breed",
+                            options = breedOptions,
+                            selectedValue = selectedBreed,
+                            onValueChange = { selectedBreed = it },
+                            expanded = breedExpanded,
+                            onExpandedChange = { breedExpanded = it }
+                        )
+                        FormTextField(label = "Name", value = name, onValueChange = { name = it })
+                        FormDropdown(
+                            label = "Gender",
+                            options = genderOptions,
+                            selectedValue = selectedGender,
+                            onValueChange = { selectedGender = it },
+                            expanded = genderExpanded,
+                            onExpandedChange = { genderExpanded = it }
+                        )
+                        DateTextField(
+                            label = "Date of Birth",
+                            date = dob,
+                            onDateChange = { dob = it })
+                        DateTextField(
+                            label = "Tagging Date",
+                            date = taggingDate,
+                            onDateChange = { taggingDate = it })
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -250,10 +239,15 @@ fun CattleFormScreen(
                 val isLoading = addCattleState is UiState.Loading
                 Button(
                     onClick = {
+                        val userId = authViewModel.getCurrentUserId()
+                        if (userId.isNullOrBlank()) {
+                            coroutineScope.launch { snackbarHostState.showSnackbar("Error: Could not identify user.") }
+                            return@Button
+                        }
                         val currentDate =
                             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                         val request = CattleRequest(
-                            userId = authViewModel.getCurrentUserId(),
+                            userId = userId,
                             tagNumber = tagNumber,
                             species = selectedSpecies,
                             breed = selectedBreed,
@@ -268,7 +262,7 @@ fun CattleFormScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    enabled = isFormValid && !isLoading, // Button disabled if form invalid or loading
+                    enabled = isFormValid && !isLoading,
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {
@@ -281,30 +275,35 @@ fun CattleFormScreen(
                             text = "Register Animal",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
+                            fontFamily = metropolisFamily
                         )
                     }
                 }
             }
         }
     }
-
-
-
-// Helper Composables for clean code
+}
 
 @Composable
 private fun FormTextField(label: String, value: String, onValueChange: (String) -> Unit) {
-    Column(modifier = Modifier.padding(bottom = 24.dp)) {
+    Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
+            fontFamily = metropolisFamily,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            textStyle = TextStyle(fontFamily = metropolisFamily),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
     }
 }
@@ -319,10 +318,12 @@ private fun FormDropdown(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit
 ) {
-    Column(modifier = Modifier.padding(bottom = 24.dp)) {
+    Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
+            fontFamily = metropolisFamily,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         ExposedDropdownMenuBox(
@@ -337,16 +338,23 @@ private fun FormDropdown(
                     .menuAnchor()
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
-                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                textStyle = TextStyle(fontFamily = metropolisFamily),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                )
             )
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { onExpandedChange(false) }) {
                 options.forEach { option ->
-                    DropdownMenuItem(text = { Text(option) }, onClick = {
-                        onValueChange(option)
-                        onExpandedChange(false)
-                    })
+                    DropdownMenuItem(
+                        text = { Text(option, fontFamily = metropolisFamily) },
+                        onClick = {
+                            onValueChange(option)
+                            onExpandedChange(false)
+                        }
+                    )
                 }
             }
         }
@@ -355,20 +363,27 @@ private fun FormDropdown(
 
 @Composable
 private fun DateTextField(label: String, date: String, onDateChange: (String) -> Unit) {
-    Column(modifier = Modifier.padding(bottom = 24.dp)) {
+    Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
+            fontFamily = metropolisFamily,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = date,
-            onValueChange = onDateChange, // Changed to be editable
+            onValueChange = onDateChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("YYYY-MM-DD") }, // Suggests the format
+            placeholder = { Text("YYYY-MM-DD", fontFamily = metropolisFamily) },
             trailingIcon = { Icon(Icons.Default.CalendarToday, "Date") },
             shape = RoundedCornerShape(8.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number) // Sets numeric keyboard
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            textStyle = TextStyle(fontFamily = metropolisFamily),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
     }
 }

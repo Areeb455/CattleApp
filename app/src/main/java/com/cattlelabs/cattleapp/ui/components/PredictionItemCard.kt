@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cattlelabs.cattleapp.ui.theme.Green
 import com.cattlelabs.cattleapp.ui.theme.LightGreen
+import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 
 @Composable
 fun PredictionItemCard(
@@ -34,7 +36,9 @@ fun PredictionItemCard(
         modifier = modifier.clickable { onCardClick() },
         colors = CardDefaults.cardColors(
             containerColor = LightGreen
-        )
+        ),
+        // ✅ Elevation added to give the card a shadow
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
@@ -47,14 +51,16 @@ fun PredictionItemCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = breed ?: "Unknown Breed",
+                    fontFamily = metropolisFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
-                // Show "View Details" only if breedId is not null
-                if (!breedId.isNullOrBlank()) {
+                // Robust check for a valid, non-empty, non-"null" string breedId
+                if (!breedId.isNullOrBlank() && breedId != "null") {
                     Text(
                         text = "View Details",
-                        color = MaterialTheme.colorScheme.primary,
+                        fontFamily = metropolisFamily,
+                        color = Green,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
                         modifier = Modifier
@@ -64,15 +70,18 @@ fun PredictionItemCard(
                 }
             }
 
-            // Accuracy Text
+            // Safely display accuracy, showing a placeholder if null
+            val accuracyText = accuracy?.let { "%.2f%%".format(it) } ?: "-- %"
+
             Text(
-                text = "%.2f%%".format(accuracy),
+                text = accuracyText,
+                fontFamily = metropolisFamily,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.primary,
+                color = Green,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
-            // Arrow Icon
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = "Navigate to details"

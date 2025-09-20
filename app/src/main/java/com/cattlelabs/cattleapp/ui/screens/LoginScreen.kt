@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,11 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.state.UiState
-import com.cattlelabs.cattleapp.ui.components.CustomTextField // Import CustomTextField
+import com.cattlelabs.cattleapp.ui.components.CustomTextField
+import com.cattlelabs.cattleapp.ui.theme.Green
+import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 import com.cattlelabs.cattleapp.viewmodel.AuthViewModel
 
 @Composable
@@ -41,7 +47,7 @@ fun LoginScreen(
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val loginState = authViewModel.loginState.collectAsState().value
+    val loginState by authViewModel.loginState.collectAsState()
 
     LaunchedEffect(loginState) {
         if (loginState is UiState.Success) {
@@ -49,11 +55,10 @@ fun LoginScreen(
         }
     }
 
-    Box {
-
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(R.drawable.background),
-            contentDescription = null,
+            contentDescription = "Background",
             modifier = Modifier.fillMaxSize()
         )
 
@@ -64,58 +69,78 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Image(
                 painter = painterResource(R.drawable.logo),
-                contentDescription = null,
+                contentDescription = "App Logo",
                 modifier = Modifier
                     .size(125.dp)
                     .clip(CircleShape)
             )
 
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // User ID TextField using CustomTextField
-            CustomTextField(
-                value = userId,
-                onValueChange = { userId = it },
-                label = "User ID",
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Password TextField using CustomTextField
-            CustomTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = "Password",
-                isPasswordTextField = true // Enable password mode
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Login Button
-            Button(
-                onClick = { authViewModel.login(userId, password) },
-                enabled = userId.isNotEmpty() && password.isNotEmpty() && loginState !is UiState.Loading,
-                modifier = Modifier.fillMaxWidth()
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                modifier = Modifier.fillMaxWidth(),
+                shadowElevation = 8.dp
             ) {
-                if (loginState is UiState.Loading) {
-                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
-                } else {
-                    Text("Login")
-                }
-            }
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CustomTextField(
+                        value = userId,
+                        onValueChange = { userId = it },
+                        label = "User ID",
+                    )
 
-            // Error Message
-            if (loginState is UiState.Failed) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = loginState.message,
-                    color = MaterialTheme.colorScheme.error
-                )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    CustomTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = "Password",
+                        isPasswordTextField = true
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { authViewModel.login(userId, password) },
+                        enabled = userId.isNotEmpty() && password.isNotEmpty() && loginState !is UiState.Loading,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Green),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 8.dp,
+                            pressedElevation = 2.dp
+                        )
+                    ) {
+                        if (loginState is UiState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text(
+                                "Login",
+                                fontFamily = metropolisFamily,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    if (loginState is UiState.Failed) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = (loginState as UiState.Failed).message,
+                            color = MaterialTheme.colorScheme.error,
+                            fontFamily = metropolisFamily
+                        )
+                    }
+                }
             }
         }
     }

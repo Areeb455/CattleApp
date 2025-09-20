@@ -69,10 +69,10 @@ fun CustomTextField(
             unfocusedContainerColor = Color.Transparent,   // No background fill when unfocused
             focusedTextColor = Color.Black,
             unfocusedTextColor = Color.White,
-            cursorColor = Color.White,
+            cursorColor = Color.Black,
             focusedIndicatorColor = Color.Black,           // Border color when focused
             unfocusedIndicatorColor = Color.LightGray.copy(alpha = 0.5f), // Border color when not focused
-            focusedLabelColor = Color.White,
+            focusedLabelColor = Color.Black,
             unfocusedLabelColor = Color.LightGray
         )
     )

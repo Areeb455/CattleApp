@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -45,6 +46,7 @@ import com.cattlelabs.cattleapp.ui.components.PredictionItemCard
 import com.cattlelabs.cattleapp.ui.components.core.TopBar
 import com.cattlelabs.cattleapp.ui.theme.Green
 import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
+import com.cattlelabs.cattleapp.viewmodel.AuthViewModel
 import com.cattlelabs.cattleapp.viewmodel.CattleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,10 +54,12 @@ import com.cattlelabs.cattleapp.viewmodel.CattleViewModel
 fun BreedPredictionScreen(
     navController: NavController,
     encodedUri: String?,
-    viewModel: CattleViewModel = hiltViewModel()
+    viewModel: CattleViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel() // Inject AuthViewModel to get location
 ) {
     val context = LocalContext.current
     val predictionState by viewModel.predictionState.collectAsState()
+    val userLocation = authViewModel.getLocation()
 
     LaunchedEffect(key1 = encodedUri) {
         if (encodedUri != null && viewModel.predictionState.value is UiState.Idle) {
@@ -96,12 +100,18 @@ fun BreedPredictionScreen(
                                 text = "Analyzing your image...",
                                 fontFamily = metropolisFamily,
                                 fontWeight = FontWeight.SemiBold,
+                                color = Color.White
                             )
                         }
                     }
 
                     is UiState.Success -> {
                         val data = state.data
+                        // Filter the prediction list to find local matches
+                        val localMatches = data.predictions.filter { prediction ->
+                            prediction.location.any { it.equals(userLocation, ignoreCase = true) }
+                        }
+
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -109,10 +119,11 @@ fun BreedPredictionScreen(
                         ) {
                             item {
                                 Text(
-                                    text = "Prediction Results",
+                                    text = "Top Prediction Results",
                                     style = MaterialTheme.typography.headlineSmall,
                                     fontFamily = metropolisFamily,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
                                 )
                             }
 
@@ -134,6 +145,41 @@ fun BreedPredictionScreen(
                                     }
                                 )
                             }
+
+                            // --- New Section for Local Breeds ---
+                            if (localMatches.isNotEmpty()) {
+                                item {
+                                    Spacer(modifier = Modifier.height(24.dp))
+                                    HorizontalDivider(color = Color.White.copy(alpha = 0.5f))
+                                    Spacer(modifier = Modifier.height(24.dp))
+                                    Text(
+                                        text = "Also Found In Your Location",
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontFamily = metropolisFamily,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+
+                                items(localMatches) { prediction ->
+                                    PredictionItemCard(
+                                        breedId = prediction.breedId,
+                                        breed = prediction.breed,
+                                        accuracy = prediction.accuracy,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onCardClick = {
+                                            prediction.breed?.let { breedName ->
+                                                navController.navigate("${CattleAppScreens.CattleFormScreen.route}?breedName=$breedName")
+                                            }
+                                        },
+                                        onDetailsClick = {
+                                            prediction.breedId?.let { id ->
+                                                navController.navigate("${CattleAppScreens.BreedDetailScreen.route}/$id")
+                                            }
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
 
@@ -153,7 +199,8 @@ fun BreedPredictionScreen(
                         Text(
                             text = "Preparing to analyze...",
                             fontFamily = metropolisFamily,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
                         )
                     }
                 }
@@ -187,7 +234,6 @@ private fun ErrorContent(message: String) {
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium
             )
-            // The Retry button has been removed from here
         }
     }
 }

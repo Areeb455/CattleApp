@@ -10,23 +10,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -43,6 +48,7 @@ import com.cattlelabs.cattleapp.navigation.BottomNavOptions
 import com.cattlelabs.cattleapp.state.UiState
 import com.cattlelabs.cattleapp.ui.components.core.BottomNavBar
 import com.cattlelabs.cattleapp.ui.components.core.TopBar
+import com.cattlelabs.cattleapp.ui.theme.Green
 import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 import com.cattlelabs.cattleapp.viewmodel.CattleViewModel
 
@@ -58,68 +64,58 @@ fun PastRecordsScreen(
         viewModel.getCattle()
     }
 
-    Scaffold(
-        topBar = {
-            TopBar(
-                title = "Past Records"
-            )
-        },
-        bottomBar = {
-            BottomNavBar(
-                navController = navController,
-                bottomMenu = BottomNavOptions.bottomNavOptions
-            )
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.bg1),
+            contentDescription = "background",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
-            Image(
-                painter = painterResource(R.drawable.bg1),
-                contentDescription = null,
-                modifier = Modifier
-
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop,
-
-
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                TopBar(
+                    title = "Past Records"
                 )
-
-            when (val state = cattleListState) {
-                is UiState.Loading -> {
-                    CircularProgressIndicator()
-                }
-
-                is UiState.Success -> {
-                    if (state.data.isEmpty()) {
-                        Text("You haven't added any cattle records yet.")
-                    } else {
-                        CattleList(cattleRecords = state.data)
+            },
+            bottomBar = {
+                BottomNavBar(
+                    navController = navController,
+                    bottomMenu = BottomNavOptions.bottomNavOptions
+                )
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                when (val state = cattleListState) {
+                    is UiState.Loading -> {
+                        CircularProgressIndicator(color = Green)
                     }
-                }
-
-                is UiState.NoDataFound -> {
-                    Text("You haven't added any cattle records yet.")
-                }
-
-                is UiState.Failed -> {
-                    ErrorState(message = state.message) { viewModel.getCattle() }
-                }
-
-                is UiState.InternetError -> {
-                    ErrorState(message = "Please check your internet connection.") { viewModel.getCattle() }
-                }
-
-                is UiState.InternalServerError -> {
-                    ErrorState(message = "A server error occurred.") { viewModel.getCattle() }
-                }
-
-                is UiState.Idle -> {
-                    // The initial state before the API call is made
+                    is UiState.Success -> {
+                        if (state.data.isEmpty()) {
+                            MessageOnSurface("You haven't added any cattle records yet.")
+                        } else {
+                            CattleList(cattleRecords = state.data)
+                        }
+                    }
+                    is UiState.NoDataFound -> {
+                        MessageOnSurface("You haven't added any cattle records yet.")
+                    }
+                    is UiState.Failed -> {
+                        ErrorState(message = state.message) { viewModel.getCattle() }
+                    }
+                    is UiState.InternetError -> {
+                        ErrorState(message = "Please check your internet connection.") { viewModel.getCattle() }
+                    }
+                    is UiState.InternalServerError -> {
+                        ErrorState(message = "A server error occurred.") { viewModel.getCattle() }
+                    }
+                    is UiState.Idle -> { /* Initial state */ }
                 }
             }
         }
@@ -131,7 +127,7 @@ fun CattleList(cattleRecords: List<Cattle>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(cattleRecords) { cattle ->
             CattleRecordItem(cattle = cattle)
@@ -144,60 +140,42 @@ fun CattleRecordItem(cattle: Cattle) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp) // Adjusted spacing for a cleaner look
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Cattle Name (Primary Title)
             Text(
                 text = cattle.name ?: "Unnamed",
                 style = MaterialTheme.typography.headlineSmall,
                 fontFamily = metropolisFamily,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                fontWeight = FontWeight.Bold
             )
-
-            // Tag Number (Secondary Title / Identifier)
             Text(
-                text = "Tag: ${cattle.tagNumber}",
+                text = "Tag: ${cattle.tagNumber ?: "N/A"}", // Safely handle null
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = metropolisFamily,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
+                color = Green
             )
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(8.dp)) // Separator
+            // Safely handle nulls for all fields using the helper
+            DetailItem(label = "Breed", value = cattle.breedName ?: "Unknown")
+            DetailItem(label = "Species", value = cattle.species ?: "Unknown")
 
-            // Other Details
-            DetailItem(label = "Breed", value = cattle.breedName)
-            DetailItem(label = "Species", value = cattle.species)
-
-            cattle.sex?.let {
-                DetailItem(label = "Sex", value = it)
-            }
-            cattle.dob?.let {
-                DetailItem(label = "DOB", value = it)
-            }
-            cattle.taggingDate?.let {
-                DetailItem(label = "Tagging Date", value = it)
-            }
-            cattle.dataEntryDate?.let {
-                DetailItem(label = "Entry Date", value = it)
-            }
+            cattle.sex?.let { DetailItem(label = "Sex", value = it) }
+            cattle.dob?.let { DetailItem(label = "DOB", value = it) }
+            cattle.taggingDate?.let { DetailItem(label = "Tagging Date", value = it) }
+            cattle.dataEntryDate?.let { DetailItem(label = "Entry Date", value = it) }
         }
     }
 }
 
-/**
- * A helper composable to consistently style detail rows.
- * It bolds the label for clear separation.
- */
 @Composable
 private fun DetailItem(label: String, value: String) {
     Text(
-        // Build a string with two different styles
         buildAnnotatedString {
             withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
                 append("$label: ")
@@ -206,17 +184,57 @@ private fun DetailItem(label: String, value: String) {
         },
         fontFamily = metropolisFamily,
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant // Slightly muted color for details
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
 
 @Composable
 fun ErrorState(message: String, onRetry: () -> Unit) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = message, textAlign = TextAlign.Center)
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text("Retry")
+    Surface(
+        modifier = Modifier.padding(32.dp),
+        shape = MaterialTheme.shapes.medium,
+        shadowElevation = 4.dp,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(24.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = "Error",
+                modifier = Modifier.size(64.dp),
+                tint = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = message,
+                textAlign = TextAlign.Center,
+                fontFamily = metropolisFamily,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onRetry) {
+                Text("Retry", fontFamily = metropolisFamily, fontWeight = FontWeight.Bold)
+            }
         }
+    }
+}
+
+@Composable
+private fun MessageOnSurface(message: String) {
+    Surface(
+        modifier = Modifier.padding(32.dp),
+        shape = MaterialTheme.shapes.medium,
+        shadowElevation = 4.dp,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+    ) {
+        Text(
+            text = message,
+            modifier = Modifier.padding(24.dp),
+            textAlign = TextAlign.Center,
+            fontFamily = metropolisFamily,
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }

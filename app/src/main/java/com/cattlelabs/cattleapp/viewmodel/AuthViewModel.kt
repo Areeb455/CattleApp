@@ -35,26 +35,11 @@ class AuthViewModel @Inject constructor(
                     )
                     _loginState.value = UiState.Success(loginData)
                 }
-
-                is UiState.Failed -> {
-                    _loginState.value = UiState.Failed(result.message)
-                }
-
-                is UiState.InternetError -> {
-                    _loginState.value = UiState.InternetError
-                }
-
-                is UiState.InternalServerError -> {
-                    _loginState.value = UiState.InternalServerError(result.errorMessage)
-                }
-
-                is UiState.NoDataFound -> {
-                    _loginState.value = UiState.NoDataFound
-                }
-
-                else -> {
-                    _loginState.value = UiState.Failed("Unknown error occurred")
-                }
+                is UiState.Failed -> _loginState.value = UiState.Failed(result.message)
+                is UiState.InternetError -> _loginState.value = UiState.InternetError
+                is UiState.InternalServerError -> _loginState.value = UiState.InternalServerError(result.errorMessage)
+                is UiState.NoDataFound -> _loginState.value = UiState.NoDataFound
+                else -> _loginState.value = UiState.Failed("Unknown error occurred")
             }
         }
     }
@@ -66,7 +51,6 @@ class AuthViewModel @Inject constructor(
     fun getCurrentUserId(): String? {
         return authRepo.getCurrentUserId()
     }
-
 
     fun getLocation(): String {
         return authRepo.getLocation()
@@ -80,5 +64,4 @@ class AuthViewModel @Inject constructor(
         authRepo.logout()
         _loginState.value = UiState.Idle
     }
-
 }

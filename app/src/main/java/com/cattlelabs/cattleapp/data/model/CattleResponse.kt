@@ -10,8 +10,13 @@ data class CattleResponse(
     val tagNumber: String?,
 
     @SerializedName("breed_id")
-    val breedId: String?,
+    val breedId: BreedIdObject?,
 
     @SerializedName("breed_name")
     val breedName: String?
+)
+
+data class BreedIdObject(
+    @SerializedName("\$oid")
+    val oid: String?
 )

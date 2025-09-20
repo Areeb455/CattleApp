@@ -162,6 +162,7 @@ fun CattleFormScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             // Header
@@ -184,15 +185,6 @@ fun CattleFormScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-            // Form Content
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
-                    .padding(24.dp)
-            ) {
 
 
                 // --- Form Fields ---
@@ -295,7 +287,7 @@ fun CattleFormScreen(
             }
         }
     }
-}
+
 
 
 // Helper Composables for clean code

@@ -128,6 +128,12 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.5.0")
     implementation("androidx.camera:camera-view:1.5.0")
     implementation("androidx.activity:activity-compose:1.8.0")
+
+    implementation("androidx.camera:camera-compose:1.5.0-alpha03")
+    // Accompanist Permissions (for permission handling)
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    // Activity Compose (for proper lifecycle management)
+    implementation("androidx.activity:activity-compose:1.8.2")
 }
 
 

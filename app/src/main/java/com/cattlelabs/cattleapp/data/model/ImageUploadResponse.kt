@@ -1,6 +1,6 @@
 package com.cattlelabs.cattleapp.data.model
 
-data class ImageUploadResponse(
-    val id: String,
+data class PredictionBody(
     val url: String,
+    val predictions: List<Prediction>
 )

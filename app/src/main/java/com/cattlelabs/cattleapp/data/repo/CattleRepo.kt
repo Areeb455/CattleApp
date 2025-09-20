@@ -5,7 +5,7 @@ import com.cattlelabs.cattleapp.data.model.BreedDetails
 import com.cattlelabs.cattleapp.data.model.Cattle
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.data.model.CattleResponse
-import com.cattlelabs.cattleapp.data.model.ImageUploadResponse
+import com.cattlelabs.cattleapp.data.model.PredictionBody
 import com.cattlelabs.cattleapp.data.remote.CattleApiService
 import com.cattlelabs.cattleapp.state.UiState
 import okhttp3.MultipartBody
@@ -111,13 +111,13 @@ class CattleRepo @Inject constructor(
         }
     }
 
-    suspend fun uploadImage(
+    suspend fun uploadAndPredict(
         imagePart: MultipartBody.Part,
         name: RequestBody? = null,
         description: RequestBody? = null
-    ): UiState<ApiResponse<ImageUploadResponse>> {
+    ): UiState<ApiResponse<PredictionBody>> {
         return try {
-            val response = apiService.uploadImage(imagePart, name, description)
+            val response = apiService.uploadAndPredict(imagePart, name, description)
 
             when {
                 response.isSuccessful -> {
@@ -144,4 +144,5 @@ class CattleRepo @Inject constructor(
             UiState.Failed("Unexpected error: ${e.message}")
         }
     }
+
 }

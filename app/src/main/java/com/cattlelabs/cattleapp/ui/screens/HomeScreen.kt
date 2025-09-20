@@ -78,7 +78,7 @@ fun HomeScreen(
                         text = "Scan Cattle",
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        navController.navigate(CattleAppScreens.CattleScanScreen.route)
+                        navController.navigate(CattleAppScreens.CattleScannerScreen.route)
                     }
                 }
 
@@ -89,7 +89,7 @@ fun HomeScreen(
                         text = "Manual Registration",
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        navController.navigate(CattleAppScreens.CattleScanScreen.route)
+                        navController.navigate(CattleAppScreens.CattleFormScreen.route)
                     }
                 }
 

@@ -1,12 +1,14 @@
 package com.cattlelabs.cattleapp.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cattlelabs.cattleapp.data.model.BreedDetails
 import com.cattlelabs.cattleapp.data.model.Cattle
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.data.model.CattleResponse
-import com.cattlelabs.cattleapp.data.model.ImageUploadResponse
+import com.cattlelabs.cattleapp.data.model.PredictionBody
 import com.cattlelabs.cattleapp.data.repo.AuthRepo
 import com.cattlelabs.cattleapp.data.repo.CattleRepo
 import com.cattlelabs.cattleapp.state.UiState
@@ -17,7 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.InputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,8 +38,9 @@ class CattleViewModel @Inject constructor(
     private val _breedDetailsState = MutableStateFlow<UiState<BreedDetails>>(UiState.Idle)
     val breedDetailsState: StateFlow<UiState<BreedDetails>> = _breedDetailsState.asStateFlow()
 
-    private val _imageUploadState = MutableStateFlow<UiState<ImageUploadResponse>>(UiState.Idle)
-    val imageUploadState: StateFlow<UiState<ImageUploadResponse>> = _imageUploadState.asStateFlow()
+    private val _predictionState = MutableStateFlow<UiState<PredictionBody>>(UiState.Idle)
+    val predictionState: StateFlow<UiState<PredictionBody>> = _predictionState.asStateFlow()
+
 
     fun getCattle() {
         val userId = authRepo.getCurrentUserId()
@@ -142,48 +146,45 @@ class CattleViewModel @Inject constructor(
         }
     }
 
-    fun uploadImage(
-        imagePart: MultipartBody.Part,
-        name: String? = null,
-        description: String? = null
-    ) {
+    fun uploadAndPredict(context: Context, imageUri: Uri) {
         viewModelScope.launch {
-            _imageUploadState.value = UiState.Loading
+            _predictionState.value = UiState.Loading
 
-            val nameBody = name?.let {
-                RequestBody.create("text/plain".toMediaTypeOrNull(), it)
-            }
-            val descBody = description?.let {
-                RequestBody.create("text/plain".toMediaTypeOrNull(), it)
+            // Convert Uri to MultipartBody.Part
+            val imagePart = try {
+                val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
+                val imageBytes = inputStream?.readBytes()
+                inputStream?.close()
+
+                if (imageBytes == null) {
+                    _predictionState.value = UiState.Failed("Could not read image file.")
+                    return@launch
+                }
+
+                val requestBody = imageBytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("image", "photo.jpg", requestBody)
+            } catch (e: Exception) {
+                _predictionState.value = UiState.Failed("Error preparing image: ${e.message}")
+                return@launch
             }
 
-            when (val result = cattleRepository.uploadImage(imagePart, nameBody, descBody)) {
+            // Call the repository
+            when (val result = cattleRepository.uploadAndPredict(imagePart)) {
                 is UiState.Success -> {
-                    _imageUploadState.value = UiState.Success(result.data.body)
+                    _predictionState.value = UiState.Success(result.data.body)
                 }
 
                 is UiState.Failed -> {
-                    _imageUploadState.value = UiState.Failed(result.message)
+                    _predictionState.value = UiState.Failed(result.message)
                 }
-
-                is UiState.InternetError -> {
-                    _imageUploadState.value = UiState.InternetError
-                }
-
-                is UiState.InternalServerError -> {
-                    _imageUploadState.value = UiState.InternalServerError(result.errorMessage)
-                }
-
-                is UiState.NoDataFound -> {
-                    _imageUploadState.value = UiState.NoDataFound
-                }
-
+                // ... handle other states like you do for other functions
                 else -> {
-                    _imageUploadState.value = UiState.Failed("Unknown error occurred")
+                    _predictionState.value = UiState.Failed("Unknown error occurred")
                 }
             }
         }
     }
+
 
     // Reset state functions
     fun resetAddCattleState() {
@@ -194,8 +195,8 @@ class CattleViewModel @Inject constructor(
         _breedDetailsState.value = UiState.Idle
     }
 
-    fun resetImageUploadState() {
-        _imageUploadState.value = UiState.Idle
+    fun resetPredictionState() {
+        _predictionState.value = UiState.Idle
     }
 
     fun resetCattleListState() {

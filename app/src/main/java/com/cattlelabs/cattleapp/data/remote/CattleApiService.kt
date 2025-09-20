@@ -5,9 +5,9 @@ import com.cattlelabs.cattleapp.data.model.BreedDetails
 import com.cattlelabs.cattleapp.data.model.Cattle
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.data.model.CattleResponse
-import com.cattlelabs.cattleapp.data.model.ImageUploadResponse
 import com.cattlelabs.cattleapp.data.model.LoginRequest
 import com.cattlelabs.cattleapp.data.model.LoginResponse
+import com.cattlelabs.cattleapp.data.model.PredictionBody
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -29,16 +29,16 @@ interface CattleApiService {
     suspend fun addCattle(@Body request: CattleRequest): Response<ApiResponse<CattleResponse>>
 
     @GET("get-cattle")
-    suspend fun getCattle(@Query("user_id") userId: String): Response<ApiResponse<List<Cattle>>>
+    suspend fun getCattle(@Query("userId") userId: String): Response<ApiResponse<List<Cattle>>>
 
     @GET("get-breed/{breed_id}")
     suspend fun getBreedById(@Path("breed_id") breedId: String): Response<ApiResponse<BreedDetails>>
 
     @Multipart
-    @POST("upload-image")
-    suspend fun uploadImage(
+    @POST("upload-and-predict")
+    suspend fun uploadAndPredict(
         @Part image: MultipartBody.Part,
         @Part("name") name: RequestBody? = null,
         @Part("description") description: RequestBody? = null
-    ): Response<ApiResponse<ImageUploadResponse>>
+    ): Response<ApiResponse<PredictionBody>>
 }

@@ -3,11 +3,19 @@ package com.cattlelabs.cattleapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.cattlelabs.cattleapp.data.Prefs
-import com.cattlelabs.cattleapp.ui.screens.*
+import com.cattlelabs.cattleapp.ui.screens.BreedPredictionScreen
+import com.cattlelabs.cattleapp.ui.screens.CattleFormScreen
+import com.cattlelabs.cattleapp.ui.screens.CattleScannerScreen
+import com.cattlelabs.cattleapp.ui.screens.HomeScreen
+import com.cattlelabs.cattleapp.ui.screens.LoginScreen
+import com.cattlelabs.cattleapp.ui.screens.PastRecordsScreen
+import com.cattlelabs.cattleapp.ui.screens.ProfileScreen
 
 @Composable
 fun AppNavigation(
@@ -50,52 +58,28 @@ fun AppNavigation(
         composable(route = CattleAppScreens.ProfileScreen.route) {
             ProfileScreen(navController = navController)
         }
-//
-//        // Fixed: Use CattleScannerScreen instead of AnimalScanScreen
-//        composable(route = CattleAppScreens.AnimalScanScreen.route) {
-//            CattleScannerScreen(
-//                onBackClick = {
-//                    navController.popBackStack()
-//                },
-//                onBreedSelected = { selectedBreed ->
-//                    navController.navigate("${CattleAppScreens.AnimalFormScreen.route}/$selectedBreed") {
-//                        popUpTo(CattleAppScreens.HomeScreen.route)
-//                    }
-//                }
-//            )
-//        }
-//
-//        composable(route = CattleAppScreens.AnimalFormScreen.route) {
-//            CattleRegistrationForm(
-//                preSelectedBreed = null,
-//                onFormSubmit = {
-//                    navController.navigate(CattleAppScreens.HomeScreen.route) {
-//                        popUpTo(CattleAppScreens.HomeScreen.route) {
-//                            inclusive = true
-//                        }
-//                    }
-//                },
-//                onBackClick = {
-//                    navController.popBackStack()
-//                }
-//            )
-//        }
-//
-//        composable(route = "${CattleAppScreens.AnimalFormScreen.route}/{selectedBreed}") { backStackEntry ->
-//            val selectedBreed = backStackEntry.arguments?.getString("selectedBreed") ?: ""
-//            AnimalFormScreen(
-//                preSelectedBreed = selectedBreed,
-//                onFormSubmit = {
-//                    navController.navigate(CattleAppScreens.HomeScreen.route) {
-//                        popUpTo(CattleAppScreens.HomeScreen.route) {
-//                            inclusive = true
-//                        }
-//                    }
-//                },
-//                onBackClick = {
-//                    navController.popBackStack()
-//                }
-//            )
-//        }
+
+        composable(route = CattleAppScreens.CattleScannerScreen.route) {
+            CattleScannerScreen(navController = navController)
+        }
+
+        composable(route = CattleAppScreens.CattleFormScreen.route) {
+            CattleFormScreen(navController = navController)
+        }
+
+        composable(
+            route = "${CattleAppScreens.BreedPredictionScreen.route}/{encodedUri}",
+            arguments = listOf(
+                navArgument("encodedUri") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val encodedUri = backStackEntry.arguments?.getString("encodedUri")
+
+            BreedPredictionScreen(
+                navController = navController,
+                encodedUri = encodedUri,
+            )
+        }
+
     }
 }

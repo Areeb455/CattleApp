@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,7 +42,7 @@ fun BreedPredictionScreen(
     viewModel: CattleViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val predictionState by viewModel.predictionState.collectAsState()
+    val predictionState = viewModel.predictionState.collectAsState().value
 
     LaunchedEffect(key1 = encodedUri) {
         encodedUri?.let {
@@ -93,7 +92,10 @@ fun BreedPredictionScreen(
 
                         items(data.predictions) { prediction ->
 
-                            Log.d("BreedDebug", "Processing prediction. Breed: '${prediction.breed}', Breed ID: '${prediction.breedId}'")
+                            Log.d(
+                                "BreedDebug",
+                                "Processing prediction. Breed: '${prediction.breed}', Breed ID: '${prediction.breedId}'"
+                            )
 
                             PredictionItemCard(
                                 breedId = prediction.breedId,
@@ -105,7 +107,7 @@ fun BreedPredictionScreen(
                                         navController.navigate("${CattleAppScreens.CattleFormScreen.route}?breedName=$breedName")
                                     }
                                 },
-                                // ✅ This is the final connection you needed to make
+
                                 onDetailsClick = {
                                     prediction.breedId?.let { id ->
                                         navController.navigate("${CattleAppScreens.BreedDetailScreen.route}/$id")

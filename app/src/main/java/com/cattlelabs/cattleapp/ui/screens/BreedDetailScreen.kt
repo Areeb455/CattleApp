@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +34,7 @@ fun BreedDetailScreen(
     breedId: String?,
     viewModel: CattleViewModel = hiltViewModel()
 ) {
-    val breedDetailsState by viewModel.breedDetailsState.collectAsState()
+    val breedDetailsState = viewModel.breedDetailsState.collectAsState().value
 
     LaunchedEffect(key1 = breedId) {
         if (!breedId.isNullOrBlank()) {

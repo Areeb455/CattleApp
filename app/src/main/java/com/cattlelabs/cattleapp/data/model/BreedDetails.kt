@@ -10,7 +10,7 @@ data class BreedDetails(
     @SerializedName("BreedName")
     val breedName: String,
 
-    @SerializedName("BreedingTract")
+    @SerializedName("BreedingTrait")
     val breedingTract: String,
 
     @SerializedName("Location")

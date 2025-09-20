@@ -25,7 +25,7 @@ import com.cattlelabs.cattleapp.ui.theme.LightGreen
 fun PredictionItemCard(
     breedId: String?,
     breed: String?,
-    accuracy: Float,
+    accuracy: Float?,
     modifier: Modifier = Modifier,
     onCardClick: () -> Unit,
     onDetailsClick: () -> Unit,

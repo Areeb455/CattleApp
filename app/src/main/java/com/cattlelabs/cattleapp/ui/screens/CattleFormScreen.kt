@@ -1,5 +1,6 @@
 package com.cattlelabs.cattleapp.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +43,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.state.UiState
 import com.cattlelabs.cattleapp.viewmodel.AuthViewModel
@@ -143,11 +147,17 @@ fun CattleFormScreen(
         }
     }
 
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Color(0xFFF0F2F5)
     ) { paddingValues ->
+
+            Image(
+                painter = painterResource(R.drawable.bg1),
+                contentDescription = "Background",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -174,6 +184,7 @@ fun CattleFormScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
             // Form Content
             Column(
                 modifier = Modifier
@@ -182,6 +193,7 @@ fun CattleFormScreen(
                     .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                     .padding(24.dp)
             ) {
+
 
                 // --- Form Fields ---
 

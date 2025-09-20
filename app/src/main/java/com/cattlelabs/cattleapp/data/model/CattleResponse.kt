@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName
 
 data class CattleResponse(
     @SerializedName("user_id")
-    val userId: String,
+    val userId: String?,
 
     @SerializedName("tag_number")
-    val tagNumber: String,
+    val tagNumber: String?,
 
     @SerializedName("breed_id")
-    val breedId: String,
+    val breedId: String?,
 
     @SerializedName("breed_name")
-    val breedName: String
+    val breedName: String?
 )

@@ -1,5 +1,6 @@
 package com.cattlelabs.cattleapp.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,15 +27,23 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.data.model.Cattle
 import com.cattlelabs.cattleapp.navigation.BottomNavOptions
 import com.cattlelabs.cattleapp.state.UiState
 import com.cattlelabs.cattleapp.ui.components.core.BottomNavBar
+import com.cattlelabs.cattleapp.ui.components.core.TopBar
+import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 import com.cattlelabs.cattleapp.viewmodel.CattleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,7 +60,9 @@ fun PastRecordsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Past Records") })
+            TopBar(
+                title = "Past Records"
+            )
         },
         bottomBar = {
             BottomNavBar(
@@ -66,6 +77,18 @@ fun PastRecordsScreen(
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
+
+            Image(
+                painter = painterResource(R.drawable.bg1),
+                contentDescription = null,
+                modifier = Modifier
+
+                    .fillMaxSize(),
+                contentScale = ContentScale.Crop,
+
+
+                )
+
             when (val state = cattleListState) {
                 is UiState.Loading -> {
                     CircularProgressIndicator()
@@ -120,57 +143,71 @@ fun CattleList(cattleRecords: List<Cattle>) {
 fun CattleRecordItem(cattle: Cattle) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp) // Adds space between each Text
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Adjusted spacing for a cleaner look
         ) {
+            // Cattle Name (Primary Title)
             Text(
                 text = cattle.name ?: "Unnamed",
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Tag: ${cattle.tagNumber}",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Breed: ${cattle.breedName}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "Species: ${cattle.species}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.headlineSmall,
+                fontFamily = metropolisFamily,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
+            // Tag Number (Secondary Title / Identifier)
+            Text(
+                text = "Tag: ${cattle.tagNumber}",
+                style = MaterialTheme.typography.titleMedium,
+                fontFamily = metropolisFamily,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp)) // Separator
+
+            // Other Details
+            DetailItem(label = "Breed", value = cattle.breedName)
+            DetailItem(label = "Species", value = cattle.species)
+
             cattle.sex?.let {
-                Text(
-                    text = "Sex: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                DetailItem(label = "Sex", value = it)
             }
             cattle.dob?.let {
-                Text(
-                    text = "DOB: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                DetailItem(label = "DOB", value = it)
             }
             cattle.taggingDate?.let {
-                Text(
-                    text = "Tagging Date: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                DetailItem(label = "Tagging Date", value = it)
             }
             cattle.dataEntryDate?.let {
-                Text(
-                    text = "Entry Date: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                DetailItem(label = "Entry Date", value = it)
             }
         }
     }
+}
+
+/**
+ * A helper composable to consistently style detail rows.
+ * It bolds the label for clear separation.
+ */
+@Composable
+private fun DetailItem(label: String, value: String) {
+    Text(
+        // Build a string with two different styles
+        buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                append("$label: ")
+            }
+            append(value)
+        },
+        fontFamily = metropolisFamily,
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant // Slightly muted color for details
+    )
 }
 
 @Composable

@@ -61,4 +61,7 @@
     <string name="breed_detail_breeding_tract">Breeding Tract</string>
     <string name="breed_detail_location">Location</string>
     <string name="breed_detail_physical_desc">Physical Description</string>
+
+    <string name="success_animal_registered">Animal registered successfully!</string>
+    <string name="error_could_not_identify_user">Error: Could not identify user.</string>
 </resources>

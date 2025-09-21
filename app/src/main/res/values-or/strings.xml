@@ -52,4 +52,8 @@
     <string name="breed_detail_breeding_tract">ପ୍ରଜନନ କ୍ଷେତ୍ର</string>
     <string name="breed_detail_location">ସ୍ଥାନ</string>
     <string name="breed_detail_physical_desc">ଶାରୀରିକ ବିବରଣୀ</string>
+
+    <string name="success_animal_registered">ପଶୁ ସଫଳତାର ସହିତ ପଞ୍ଜିକୃତ ହୋଇଛି!</string>
+    <string name="error_could_not_identify_user">ତ୍ରୁଟି: ଉପଭୋକ୍ତାଙ୍କୁ ଚିହ୍ନଟ କରାଯାଇପାରିଲା ନାହିଁ।</string>
+
 </resources>

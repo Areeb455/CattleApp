@@ -52,4 +52,8 @@
     <string name="breed_detail_breeding_tract">प्रजनन क्षेत्र</string>
     <string name="breed_detail_location">स्थान</string>
     <string name="breed_detail_physical_desc">शारीरिक विवरण</string>
+
+    <string name="success_animal_registered">पशु सफलतापूर्वक पंजीकृत हो गया!</string>
+    <string name="error_could_not_identify_user">त्रुटि: उपयोगकर्ता की पहचान नहीं हो सकी।</string>
+
 </resources>

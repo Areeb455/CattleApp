@@ -1,4 +1,4 @@
-package com.cattlelabs.cattleapp.ui.util // Or any other appropriate package
+package com.cattlelabs.cattleapp.ui.util
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate

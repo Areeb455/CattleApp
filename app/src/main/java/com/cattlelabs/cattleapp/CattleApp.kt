@@ -14,9 +14,7 @@ class CattleApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // Get the saved language code from SharedPreferences
         val languageCode = prefs.getUserLanguage()
-        // Set the app's language to the saved preference
         LocaleHelper.updateLocale(this, languageCode)
     }
 }

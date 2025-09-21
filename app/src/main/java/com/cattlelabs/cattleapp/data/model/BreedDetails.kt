@@ -3,26 +3,24 @@ package com.cattlelabs.cattleapp.data.model
 import com.google.gson.annotations.SerializedName
 
 data class BreedDetails(
+    @SerializedName("breedId")
+    val breedId: String?,
 
-    @SerializedName("BreedId")
-    val breedId: String,
+    @SerializedName("breedName")
+    val breedName: String?,
 
-    @SerializedName("BreedName")
-    val breedName: String,
+    @SerializedName("breedingTrait")
+    val breedingTract: String?,
 
-    @SerializedName("BreedingTrait")
-    val breedingTract: String,
+    @SerializedName("location")
+    val location: List<String>?,
 
-    @SerializedName("Location")
-    val location: List<String>,
+    @SerializedName("mainUses")
+    val mainUses: String?,
 
-    @SerializedName("MainUses")
-    val mainUses: String,
+    @SerializedName("physicalDesc")
+    val physicalDesc: String?,
 
-    @SerializedName("PhysicalDesc")
-    val physicalDesc: String,
-
-    @SerializedName("Species")
-    val species: String,
-
+    @SerializedName("species")
+    val species: String?
 )

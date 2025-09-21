@@ -44,6 +44,15 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    // --- Functions Added for Language Preference ---
+    fun saveLanguagePreference(languageCode: String) {
+        authRepo.saveUserLanguage(languageCode)
+    }
+
+    fun getCurrentLanguage(): String {
+        return authRepo.getUserLanguage()
+    }
+
     fun getUserName(): String {
         return authRepo.getUserName()
     }

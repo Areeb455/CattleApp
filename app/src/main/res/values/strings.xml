@@ -1,3 +1,64 @@
 <resources>
-    <string name="app_name">Cattle App</string>
+    <string name="app_name">CattleApp</string>
+
+    <string name="retry_button">Retry</string>
+    <string name="error_no_internet">Please check your internet connection.</string>
+    <string name="error_server">A server error occurred.</string>
+
+    <string name="login_user_id_label">User ID</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_language_label">Language</string>
+
+    <string name="home_greeting">👋 Hi, %1$s!</string>
+    <string name="home_scan_cattle">Scan Cattle</string>
+    <string name="home_manual_registration">Manual Registration</string>
+
+    <string name="profile_title">Profile</string>
+    <string name="profile_user_id_label">User ID (Phone)</string>
+    <string name="profile_location_label">Location</string>
+    <string name="profile_logout_button">Logout</string>
+
+    <string name="past_records_title">Past Records</string>
+    <string name="past_records_empty">You haven\'t added any cattle records yet.</string>
+    <string name="past_records_unnamed">Unnamed</string>
+    <string name="past_records_tag_label">Tag</string>
+    <string name="past_records_breed_label">Breed</string>
+    <string name="past_records_species_label">Species</string>
+    <string name="past_records_sex_label">Sex</string>
+    <string name="past_records_dob_label">DOB</string>
+    <string name="past_records_tagging_date_label">Tagging Date</string>
+    <string name="past_records_entry_date_label">Entry Date</string>
+
+    <string name="scanner_title">Scan Cattle</string>
+    <string name="scanner_select_source">Select Image Source</string>
+    <string name="scanner_description">Choose a picture from your gallery or use the camera to identify a cattle breed.</string>
+    <string name="scanner_open_camera">Open Camera</string>
+    <string name="scanner_choose_gallery">Choose from Gallery</string>
+
+    <string name="prediction_title">Breed Prediction</string>
+    <string name="prediction_analyzing">Analyzing your image…</string>
+    <string name="prediction_top_results">Top Prediction Results</string>
+    <string name="prediction_local_results">Also Found In Your Location</string>
+    <string name="prediction_preparing">Preparing to analyze…</string>
+    <string name="prediction_view_details">View Details</string>
+
+    <string name="form_title">Register Animal</string>
+    <string name="form_tag_number">Tag Number</string>
+    <string name="form_species">Species</string>
+    <string name="form_breed">Breed</string>
+    <string name="form_name">Name</string>
+    <string name="form_gender">Gender</string>
+    <string name="form_dob">Date of Birth</string>
+    <string name="form_tagging_date">Tagging Date</string>
+    <string name="form_date_placeholder">YYYY-MM-DD</string>
+
+    <string name="breed_detail_title">Breed Details</string>
+    <string name="breed_detail_no_id">No Breed ID provided.</string>
+    <string name="breed_detail_not_found">Details not found for this breed.</string>
+    <string name="breed_detail_species">Species</string>
+    <string name="breed_detail_main_uses">Main Uses</string>
+    <string name="breed_detail_breeding_tract">Breeding Tract</string>
+    <string name="breed_detail_location">Location</string>
+    <string name="breed_detail_physical_desc">Physical Description</string>
 </resources>

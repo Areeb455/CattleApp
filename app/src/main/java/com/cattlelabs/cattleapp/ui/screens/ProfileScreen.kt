@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -36,13 +35,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.cattlelabs.cattleapp.R
-import com.cattlelabs.cattleapp.navigation.BottomNavOptions.Companion.bottomNavOptions
+import com.cattlelabs.cattleapp.navigation.BottomNavOptions
 import com.cattlelabs.cattleapp.navigation.CattleAppScreens
 import com.cattlelabs.cattleapp.ui.components.ActionCard
 import com.cattlelabs.cattleapp.ui.components.core.BottomNavBar
@@ -57,17 +57,20 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-    // Fetching user details from the ViewModel
     val displayName = viewModel.getUserName()
+    val userId = viewModel.getCurrentUserId()
     val location = viewModel.getLocation()
-    val userID: String = viewModel.getCurrentUserId()?: "Guest"
+    val phoneNumber = viewModel.getPhoneNumber()
 
     Scaffold(
         topBar = {
-            TopBar(title = "Profile")
+            TopBar(title = stringResource(id = R.string.profile_title))
         },
         bottomBar = {
-            BottomNavBar(navController = navController, bottomMenu = bottomNavOptions)
+            BottomNavBar(
+                navController = navController,
+                bottomMenu = BottomNavOptions.bottomNavOptions
+            )
         }
     ) { paddingValues ->
         Surface(
@@ -76,7 +79,6 @@ fun ProfileScreen(
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
         ) {
-            // Box to layer the background image
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
                     painter = painterResource(R.drawable.bg1),
@@ -91,7 +93,6 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
-                        // Header section
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -99,16 +100,15 @@ fun ProfileScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            // Profile initial with a border
                             Box(
                                 modifier = Modifier
                                     .size(120.dp)
-                                    .border( // Added border
+                                    .border(
                                         width = 4.dp,
                                         color = Color.White,
                                         shape = CircleShape
                                     )
-                                    .padding(4.dp) // Padding between border and background
+                                    .padding(4.dp)
                                     .clip(CircleShape)
                                     .background(color = LightGreen),
                                 contentAlignment = Alignment.Center
@@ -118,10 +118,9 @@ fun ProfileScreen(
                                     fontFamily = metropolisFamily,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 60.sp,
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = Color.White
                                 )
                             }
-
                             Text(
                                 text = displayName,
                                 style = MaterialTheme.typography.headlineSmall,
@@ -131,16 +130,11 @@ fun ProfileScreen(
                         }
                     }
 
-                    // User Details ActionCards
-
-                    // Name card has been removed as requested
-
                     item {
                         ActionCard(
                             color = LightGreen,
                             icon = Icons.Default.Badge,
-                            text = userID,
-                            subtitle = userID,
+                            text = userId,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {}
                     }
@@ -150,21 +144,17 @@ fun ProfileScreen(
                             color = LightGreen,
                             icon = Icons.Default.LocationOn,
                             text = location,
-                            subtitle = location,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {}
                     }
 
                     item {
                         Spacer(modifier = Modifier.height(24.dp))
-                        // Enhanced Logout Button
                         Button(
                             onClick = {
                                 viewModel.logout()
                                 navController.navigate(CattleAppScreens.LoginScreen.route) {
-                                    popUpTo(CattleAppScreens.HomeScreen.route) {
-                                        inclusive = true
-                                    }
+                                    popUpTo(CattleAppScreens.HomeScreen.route) { inclusive = true }
                                 }
                             },
                             modifier = Modifier
@@ -181,7 +171,7 @@ fun ProfileScreen(
                                 Icon(Icons.Default.Logout, contentDescription = "Logout")
                                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                                 Text(
-                                    text = "Logout",
+                                    text = stringResource(R.string.profile_logout_button),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = metropolisFamily

@@ -65,9 +65,14 @@ fun AppNavigation(
         }
 
         composable(
-            route = "${CattleAppScreens.CattleFormScreen.route}?breedName={breedName}",
+            route = "${CattleAppScreens.CattleFormScreen.route}?breedName={breedName}&species={species}",
             arguments = listOf(
                 navArgument("breedName") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("species") {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -75,9 +80,12 @@ fun AppNavigation(
             )
         ) { backStackEntry ->
             val breedName = backStackEntry.arguments?.getString("breedName")
+            val species = backStackEntry.arguments?.getString("species")
+
             CattleFormScreen(
                 navController = navController,
-                breedName = breedName
+                breedName = breedName,
+                species = species
             )
         }
 

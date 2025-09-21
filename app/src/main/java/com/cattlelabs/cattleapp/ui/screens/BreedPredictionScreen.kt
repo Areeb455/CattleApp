@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +56,7 @@ fun BreedPredictionScreen(
     navController: NavController,
     encodedUri: String?,
     viewModel: CattleViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel() // Inject AuthViewModel to get location
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val predictionState by viewModel.predictionState.collectAsState()
@@ -80,7 +81,7 @@ fun BreedPredictionScreen(
             containerColor = Color.Transparent,
             topBar = {
                 TopBar(
-                    title = "Breed Prediction"
+                    title = stringResource(id = R.string.prediction_title)
                 )
             }
         ) { paddingValues ->
@@ -97,7 +98,7 @@ fun BreedPredictionScreen(
                             CircularProgressIndicator(color = Green)
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Analyzing your image...",
+                                text = stringResource(R.string.prediction_analyzing),
                                 fontFamily = metropolisFamily,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.White
@@ -107,7 +108,6 @@ fun BreedPredictionScreen(
 
                     is UiState.Success -> {
                         val data = state.data
-                        // Filter the prediction list to find local matches
                         val localMatches = data.predictions.filter { prediction ->
                             prediction.location.any { it.equals(userLocation, ignoreCase = true) }
                         }
@@ -119,7 +119,7 @@ fun BreedPredictionScreen(
                         ) {
                             item {
                                 Text(
-                                    text = "Top Prediction Results",
+                                    text = stringResource(R.string.prediction_top_results),
                                     style = MaterialTheme.typography.headlineSmall,
                                     fontFamily = metropolisFamily,
                                     fontWeight = FontWeight.Bold,
@@ -135,7 +135,13 @@ fun BreedPredictionScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     onCardClick = {
                                         prediction.breed?.let { breedName ->
-                                            navController.navigate("${CattleAppScreens.CattleFormScreen.route}?breedName=$breedName")
+                                            val species = prediction.species
+                                            var route =
+                                                "${CattleAppScreens.CattleFormScreen.route}?breedName=$breedName"
+                                            if (species != null) {
+                                                route += "&species=$species"
+                                            }
+                                            navController.navigate(route)
                                         }
                                     },
                                     onDetailsClick = {
@@ -146,14 +152,13 @@ fun BreedPredictionScreen(
                                 )
                             }
 
-                            // --- New Section for Local Breeds ---
                             if (localMatches.isNotEmpty()) {
                                 item {
                                     Spacer(modifier = Modifier.height(24.dp))
                                     HorizontalDivider(color = Color.White.copy(alpha = 0.5f))
                                     Spacer(modifier = Modifier.height(24.dp))
                                     Text(
-                                        text = "Also Found In Your Location",
+                                        text = stringResource(R.string.prediction_local_results),
                                         style = MaterialTheme.typography.headlineSmall,
                                         fontFamily = metropolisFamily,
                                         fontWeight = FontWeight.Bold,
@@ -169,7 +174,13 @@ fun BreedPredictionScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                         onCardClick = {
                                             prediction.breed?.let { breedName ->
-                                                navController.navigate("${CattleAppScreens.CattleFormScreen.route}?breedName=$breedName")
+                                                val species = prediction.species
+                                                var route =
+                                                    "${CattleAppScreens.CattleFormScreen.route}?breedName=$breedName"
+                                                if (species != null) {
+                                                    route += "&species=$species"
+                                                }
+                                                navController.navigate(route)
                                             }
                                         },
                                         onDetailsClick = {
@@ -188,16 +199,16 @@ fun BreedPredictionScreen(
                     }
 
                     is UiState.InternetError -> {
-                        ErrorContent(message = "Please check your internet connection.")
+                        ErrorContent(message = stringResource(R.string.error_no_internet))
                     }
 
                     is UiState.InternalServerError -> {
-                        ErrorContent(message = "A server error occurred.")
+                        ErrorContent(message = stringResource(R.string.error_server))
                     }
 
                     else -> {
                         Text(
-                            text = "Preparing to analyze...",
+                            text = stringResource(R.string.prediction_preparing),
                             fontFamily = metropolisFamily,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.White

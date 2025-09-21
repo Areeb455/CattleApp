@@ -1,5 +1,7 @@
 package com.cattlelabs.cattleapp.ui.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +34,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.data.model.BreedDetails
+import com.cattlelabs.cattleapp.navigation.CattleAppScreens
 import com.cattlelabs.cattleapp.state.UiState
 import com.cattlelabs.cattleapp.ui.components.core.TopBar
 import com.cattlelabs.cattleapp.ui.theme.Green
@@ -59,6 +63,18 @@ fun BreedDetailScreen(
         }
     }
 
+    val navigateToScanner = {
+        navController.navigate(CattleAppScreens.CattleScannerScreen.route) {
+            popUpTo(navController.currentDestination?.route ?: "") {
+                inclusive = true
+            }
+        }
+    }
+
+    BackHandler {
+        navController.popBackStack()
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.bg1),
@@ -68,7 +84,7 @@ fun BreedDetailScreen(
                 .blur(radius = 8.dp)
                 .drawWithContent {
                     drawContent()
-                    drawRect(Color.Black.copy(alpha = 0.5f)) // Dark tint
+                    drawRect(Color.Black.copy(alpha = 0.5f))
                 },
             contentScale = ContentScale.Crop
         )
@@ -77,7 +93,7 @@ fun BreedDetailScreen(
             containerColor = Color.Transparent,
             topBar = {
                 TopBar(
-                    title = "Breed Details"
+                    title = stringResource(R.string.breed_detail_title)
                 )
             }
         ) { paddingValues ->
@@ -89,7 +105,7 @@ fun BreedDetailScreen(
                 contentAlignment = Alignment.Center
             ) {
                 if (breedId.isNullOrBlank()) {
-                    ErrorContent(message = "No Breed ID provided.")
+                    ErrorContent(message = stringResource(R.string.breed_detail_no_id))
                     return@Box
                 }
 
@@ -99,7 +115,7 @@ fun BreedDetailScreen(
                             CircularProgressIndicator(color = Green)
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Loading Details...",
+                                text = stringResource(R.string.prediction_analyzing),
                                 fontFamily = metropolisFamily,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.White
@@ -116,16 +132,16 @@ fun BreedDetailScreen(
                     }
 
                     is UiState.InternetError -> {
-                        ErrorContent(message = "Please check your internet connection.")
+                        ErrorContent(message = stringResource(R.string.error_no_internet))
                     }
 
                     is UiState.InternalServerError -> {
-                        ErrorContent(message = "A server error occurred.")
+                        ErrorContent(message = stringResource(R.string.error_server))
                     }
 
                     else -> {
                         Text(
-                            text = "Details not found for this breed.",
+                            text = stringResource(R.string.breed_detail_not_found),
                             fontFamily = metropolisFamily,
                             color = Color.White.copy(alpha = 0.8f)
                         )
@@ -144,25 +160,40 @@ private fun BreedDetailsContent(details: BreedDetails) {
     ) {
         item {
             Text(
-                text = details.breedName,
+                text = details.breedName ?: stringResource(R.string.past_records_unnamed),
                 style = MaterialTheme.typography.headlineMedium,
                 fontFamily = metropolisFamily,
                 fontWeight = FontWeight.Bold,
-                color = Color.White // White for contrast against the dark background
+                color = Color.White
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        item { DetailCard(label = "Species", value = details.species) }
-        item { DetailCard(label = "Main Uses", value = details.mainUses) }
-        item { DetailCard(label = "Breeding Tract", value = details.breedingTract) }
-        item { DetailCard(label = "Location", value = details.location.joinToString(", ")) }
-        item { DetailCard(label = "Physical Description", value = details.physicalDesc) }
+        item { DetailCard(labelResId = R.string.breed_detail_species, value = details.species) }
+        item { DetailCard(labelResId = R.string.breed_detail_main_uses, value = details.mainUses) }
+        item {
+            DetailCard(
+                labelResId = R.string.breed_detail_breeding_tract,
+                value = details.breedingTract
+            )
+        }
+        item {
+            DetailCard(
+                labelResId = R.string.breed_detail_location,
+                value = details.location?.joinToString(", ")
+            )
+        }
+        item {
+            DetailCard(
+                labelResId = R.string.breed_detail_physical_desc,
+                value = details.physicalDesc
+            )
+        }
     }
 }
 
 @Composable
-private fun DetailCard(label: String, value: String) {
+private fun DetailCard(@StringRes labelResId: Int, value: String?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -172,15 +203,15 @@ private fun DetailCard(label: String, value: String) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = label,
+                text = stringResource(id = labelResId),
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = metropolisFamily,
                 fontWeight = FontWeight.Bold,
-                color = Green // Use custom theme color for the label
+                color = Green
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = value,
+                text = value ?: "N/A",
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = metropolisFamily
             )

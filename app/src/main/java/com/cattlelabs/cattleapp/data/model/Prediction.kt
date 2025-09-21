@@ -9,6 +9,9 @@ data class Prediction(
     @SerializedName("breed")
     val breed: String?,
 
+    @SerializedName("species")
+    val species: String?,
+
     @SerializedName("accuracy")
     val accuracy: Float?,
 

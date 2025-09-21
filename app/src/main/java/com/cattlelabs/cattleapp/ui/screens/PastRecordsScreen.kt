@@ -1,39 +1,20 @@
 package com.cattlelabs.cattleapp.ui.screens
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -76,7 +57,7 @@ fun PastRecordsScreen(
             containerColor = Color.Transparent,
             topBar = {
                 TopBar(
-                    title = "Past Records"
+                    title = stringResource(R.string.past_records_title),
                 )
             },
             bottomBar = {
@@ -87,9 +68,7 @@ fun PastRecordsScreen(
             }
         ) { paddingValues ->
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 when (val state = cattleListState) {
@@ -98,24 +77,24 @@ fun PastRecordsScreen(
                     }
                     is UiState.Success -> {
                         if (state.data.isEmpty()) {
-                            MessageOnSurface("You haven't added any cattle records yet.")
+                            MessageOnSurface(stringResource(R.string.past_records_empty))
                         } else {
                             CattleList(cattleRecords = state.data)
                         }
                     }
                     is UiState.NoDataFound -> {
-                        MessageOnSurface("You haven't added any cattle records yet.")
+                        MessageOnSurface(stringResource(R.string.past_records_empty))
                     }
                     is UiState.Failed -> {
                         ErrorState(message = state.message) { viewModel.getCattle() }
                     }
                     is UiState.InternetError -> {
-                        ErrorState(message = "Please check your internet connection.") { viewModel.getCattle() }
+                        ErrorState(message = stringResource(R.string.error_no_internet)) { viewModel.getCattle() }
                     }
                     is UiState.InternalServerError -> {
-                        ErrorState(message = "A server error occurred.") { viewModel.getCattle() }
+                        ErrorState(message = stringResource(R.string.error_server)) { viewModel.getCattle() }
                     }
-                    is UiState.Idle -> { /* Initial state */ }
+                    is UiState.Idle -> { }
                 }
             }
         }
@@ -147,13 +126,13 @@ fun CattleRecordItem(cattle: Cattle) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = cattle.name ?: "Unnamed",
+                text = cattle.name ?: stringResource(R.string.past_records_unnamed),
                 style = MaterialTheme.typography.headlineSmall,
                 fontFamily = metropolisFamily,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Tag: ${cattle.tagNumber ?: "N/A"}", // Safely handle null
+                text = "${stringResource(R.string.past_records_tag_label)}: ${cattle.tagNumber ?: "N/A"}",
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = metropolisFamily,
                 fontWeight = FontWeight.SemiBold,
@@ -161,24 +140,22 @@ fun CattleRecordItem(cattle: Cattle) {
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Safely handle nulls for all fields using the helper
-            DetailItem(label = "Breed", value = cattle.breedName ?: "Unknown")
-            DetailItem(label = "Species", value = cattle.species ?: "Unknown")
-
-            cattle.sex?.let { DetailItem(label = "Sex", value = it) }
-            cattle.dob?.let { DetailItem(label = "DOB", value = it) }
-            cattle.taggingDate?.let { DetailItem(label = "Tagging Date", value = it) }
-            cattle.dataEntryDate?.let { DetailItem(label = "Entry Date", value = it) }
+            DetailItem(labelResId = R.string.past_records_breed_label, value = cattle.breedName ?: "Unknown")
+            DetailItem(labelResId = R.string.past_records_species_label, value = cattle.species ?: "Unknown")
+            cattle.sex?.let { DetailItem(labelResId = R.string.past_records_sex_label, value = it) }
+            cattle.dob?.let { DetailItem(labelResId = R.string.past_records_dob_label, value = it) }
+            cattle.taggingDate?.let { DetailItem(labelResId = R.string.past_records_tagging_date_label, value = it) }
+            cattle.dataEntryDate?.let { DetailItem(labelResId = R.string.past_records_entry_date_label, value = it) }
         }
     }
 }
 
 @Composable
-private fun DetailItem(label: String, value: String) {
+private fun DetailItem(@StringRes labelResId: Int, value: String) {
     Text(
         buildAnnotatedString {
             withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                append("$label: ")
+                append("${stringResource(id = labelResId)}: ")
             }
             append(value)
         },
@@ -215,7 +192,7 @@ fun ErrorState(message: String, onRetry: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onRetry) {
-                Text("Retry", fontFamily = metropolisFamily, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.retry_button), fontFamily = metropolisFamily, fontWeight = FontWeight.Bold)
             }
         }
     }

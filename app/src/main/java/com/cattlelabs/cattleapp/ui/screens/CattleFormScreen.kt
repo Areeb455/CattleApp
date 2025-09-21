@@ -1,9 +1,9 @@
 package com.cattlelabs.cattleapp.ui.screens
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -42,17 +40,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,6 +57,7 @@ import androidx.navigation.NavController
 import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.state.UiState
+import com.cattlelabs.cattleapp.ui.components.core.TopBar
 import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 import com.cattlelabs.cattleapp.viewmodel.AuthViewModel
 import com.cattlelabs.cattleapp.viewmodel.CattleViewModel
@@ -73,29 +71,26 @@ import java.util.Locale
 fun CattleFormScreen(
     navController: NavController,
     breedName: String?,
+    species: String?,
     authViewModel: AuthViewModel = hiltViewModel(),
     viewModel: CattleViewModel = hiltViewModel()
 ) {
-    // --- State for API calls ---
     val addCattleState by viewModel.addCattleState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    // --- Form Fields State ---
     var name by remember { mutableStateOf("") }
     var tagNumber by remember { mutableStateOf("") }
-    var selectedSpecies by remember { mutableStateOf("") }
+    var selectedSpecies by remember { mutableStateOf(species ?: "") }
     var selectedBreed by remember { mutableStateOf(breedName ?: "") }
     var selectedGender by remember { mutableStateOf("") }
     var dob by remember { mutableStateOf("") }
     var taggingDate by remember { mutableStateOf("") }
 
-    // --- Dropdown Expanded State ---
     var speciesExpanded by remember { mutableStateOf(false) }
     var genderExpanded by remember { mutableStateOf(false) }
     var breedExpanded by remember { mutableStateOf(false) }
 
-    // --- Dropdown Options ---
     val speciesOptions = listOf("Cow", "Buffalo")
     val genderOptions = listOf("Male", "Female")
     val initialBreedOptions = listOf(
@@ -115,78 +110,26 @@ fun CattleFormScreen(
         }
     }
 
-    // --- Form Validation ---
     val isFormValid by remember(tagNumber, selectedSpecies, selectedBreed) {
         derivedStateOf {
             tagNumber.isNotBlank() && selectedSpecies.isNotBlank() && selectedBreed.isNotBlank()
         }
     }
 
-    // --- Handle API call result ---
     LaunchedEffect(addCattleState) {
         when (val state = addCattleState) {
             is UiState.Success -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar("Animal registered successfully!")
-                }
-                // Clear the form after successful registration
-                name = ""
-                tagNumber = ""
-                selectedSpecies = ""
-                selectedBreed = breedName ?: ""
-                selectedGender = ""
-                dob = ""
-                taggingDate = ""
-
-                // Navigate back after a small delay to show the success message
-                kotlinx.coroutines.delay(1500)
+                snackbarHostState.showSnackbar("Animal registered successfully!")
                 navController.popBackStack()
                 viewModel.resetAddCattleState()
             }
 
             is UiState.Failed -> {
-                coroutineScope.launch {
-                    // Handle the JSON parsing error gracefully
-                    val errorMessage =
-                        if (state.message?.contains("Expected a string but was BEGIN_OBJECT") == true) {
-                            "Animal registered successfully! (Note: There was a minor data parsing issue)"
-                        } else {
-                            "Error: ${state.message ?: "Unknown error occurred"}"
-                        }
-                    snackbarHostState.showSnackbar(errorMessage)
-                }
-
-                // If it's the JSON parsing error, treat it as success since registration actually worked
-                if (state.message?.contains("Expected a string but was BEGIN_OBJECT") == true) {
-                    // Clear the form
-                    name = ""
-                    tagNumber = ""
-                    selectedSpecies = ""
-                    selectedBreed = breedName ?: ""
-                    selectedGender = ""
-                    dob = ""
-                    taggingDate = ""
-
-                    // Navigate back after delay
-                    coroutineScope.launch {
-                        kotlinx.coroutines.delay(2000)
-                        navController.popBackStack()
-                    }
-                }
+                snackbarHostState.showSnackbar("Error: ${state.message}")
                 viewModel.resetAddCattleState()
             }
 
             is UiState.InternetError -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar("Please check your internet connection.")
-                }
-                viewModel.resetAddCattleState()
-            }
-
-            is UiState.InternalServerError -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar("Server Error: ${state.errorMessage ?: "Internal server error"}")
-                }
                 viewModel.resetAddCattleState()
             }
 
@@ -210,7 +153,12 @@ fun CattleFormScreen(
 
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
-            containerColor = Color.Transparent
+            containerColor = Color.Transparent,
+            topBar = {
+                TopBar(
+                    title = stringResource(R.string.form_title)
+                )
+            }
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -219,31 +167,6 @@ fun CattleFormScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                    Text(
-                        text = "Register Animal",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = metropolisFamily,
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Center,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.size(48.dp))
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
@@ -251,11 +174,11 @@ fun CattleFormScreen(
                 ) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         FormTextField(
-                            label = "Tag Number *",
+                            labelResId = R.string.form_tag_number,
                             value = tagNumber,
                             onValueChange = { tagNumber = it })
                         FormDropdown(
-                            label = "Species *",
+                            labelResId = R.string.form_species,
                             options = speciesOptions,
                             selectedValue = selectedSpecies,
                             onValueChange = { selectedSpecies = it },
@@ -263,7 +186,7 @@ fun CattleFormScreen(
                             onExpandedChange = { speciesExpanded = it }
                         )
                         FormDropdown(
-                            label = "Breed *",
+                            labelResId = R.string.form_breed,
                             options = breedOptions,
                             selectedValue = selectedBreed,
                             onValueChange = { selectedBreed = it },
@@ -271,12 +194,11 @@ fun CattleFormScreen(
                             onExpandedChange = { breedExpanded = it }
                         )
                         FormTextField(
-                            label = "Name",
+                            labelResId = R.string.form_name,
                             value = name,
-                            onValueChange = { name = it }
-                        )
+                            onValueChange = { name = it })
                         FormDropdown(
-                            label = "Gender",
+                            labelResId = R.string.form_gender,
                             options = genderOptions,
                             selectedValue = selectedGender,
                             onValueChange = { selectedGender = it },
@@ -284,20 +206,13 @@ fun CattleFormScreen(
                             onExpandedChange = { genderExpanded = it }
                         )
                         DateTextField(
-                            label = "Date of Birth",
+                            labelResId = R.string.form_dob,
                             date = dob,
                             onDateChange = { dob = it })
                         DateTextField(
-                            label = "Tagging Date",
+                            labelResId = R.string.form_tagging_date,
                             date = taggingDate,
                             onDateChange = { taggingDate = it })
-
-                        Text(
-                            text = "* Required fields",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
                     }
                 }
 
@@ -308,9 +223,7 @@ fun CattleFormScreen(
                     onClick = {
                         val userId = authViewModel.getCurrentUserId()
                         if (userId.isNullOrBlank()) {
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Error: Could not identify user.")
-                            }
+                            coroutineScope.launch { snackbarHostState.showSnackbar("Error: Could not identify user.") }
                             return@Button
                         }
                         val currentDate =
@@ -341,7 +254,7 @@ fun CattleFormScreen(
                         )
                     } else {
                         Text(
-                            text = "Register Animal",
+                            text = stringResource(R.string.form_title),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = metropolisFamily
@@ -354,10 +267,14 @@ fun CattleFormScreen(
 }
 
 @Composable
-private fun FormTextField(label: String, value: String, onValueChange: (String) -> Unit) {
+private fun FormTextField(
+    @StringRes labelResId: Int,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
-            text = label,
+            text = stringResource(id = labelResId),
             style = MaterialTheme.typography.labelLarge,
             fontFamily = metropolisFamily,
             fontWeight = FontWeight.SemiBold,
@@ -380,7 +297,7 @@ private fun FormTextField(label: String, value: String, onValueChange: (String) 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FormDropdown(
-    label: String,
+    @StringRes labelResId: Int,
     options: List<String>,
     selectedValue: String,
     onValueChange: (String) -> Unit,
@@ -389,7 +306,7 @@ private fun FormDropdown(
 ) {
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
-            text = label,
+            text = stringResource(id = labelResId),
             style = MaterialTheme.typography.labelLarge,
             fontFamily = metropolisFamily,
             fontWeight = FontWeight.SemiBold,
@@ -431,10 +348,14 @@ private fun FormDropdown(
 }
 
 @Composable
-private fun DateTextField(label: String, date: String, onDateChange: (String) -> Unit) {
+private fun DateTextField(
+    @StringRes labelResId: Int,
+    date: String,
+    onDateChange: (String) -> Unit
+) {
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
-            text = label,
+            text = stringResource(id = labelResId),
             style = MaterialTheme.typography.labelLarge,
             fontFamily = metropolisFamily,
             fontWeight = FontWeight.SemiBold,
@@ -444,10 +365,15 @@ private fun DateTextField(label: String, date: String, onDateChange: (String) ->
             value = date,
             onValueChange = onDateChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("YYYY-MM-DD", fontFamily = metropolisFamily) },
+            placeholder = {
+                Text(
+                    stringResource(R.string.form_date_placeholder),
+                    fontFamily = metropolisFamily
+                )
+            },
             trailingIcon = { Icon(Icons.Default.CalendarToday, "Date") },
             shape = RoundedCornerShape(8.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
             textStyle = TextStyle(fontFamily = metropolisFamily),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,

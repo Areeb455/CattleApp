@@ -47,14 +47,37 @@ class AuthRepo @Inject constructor(
         }
     }
 
+    // ✅ FIXED: Completed the saveUserSession function
+    fun saveUserSession(userId: String, userName: String, phoneNumber: String, location: String, userLanguage: String = "en") {
+        prefs.saveSession(
+            userId = userId,
+            userName = userName,
+            phoneNumber = phoneNumber,
+            location = location,
+            userLanguage = userLanguage
+        )
+    }
+
+    // ✅ ALTERNATIVE: If you want to use current language preference
     fun saveUserSession(userId: String, userName: String, phoneNumber: String, location: String) {
         prefs.saveSession(
             userId = userId,
             userName = userName,
             phoneNumber = phoneNumber,
-            location = location
+            location = location,
+            userLanguage = prefs.getUserLanguage() // Use existing language preference
         )
     }
+
+    // --- Functions for Language Preference ---
+    fun saveUserLanguage(languageCode: String) {
+        prefs.saveUserLanguage(languageCode)
+    }
+
+    fun getUserLanguage(): String {
+        return prefs.getUserLanguage()
+    }
+    // -----------------------------------------
 
     fun getCurrentUserId(): String? {
         return prefs.getUserId()
@@ -70,6 +93,11 @@ class AuthRepo @Inject constructor(
 
     fun getPhoneNumber(): String {
         return prefs.getPhoneNumber() ?: "Unknown"
+    }
+
+    // ✅ ADDED: Check if user is logged in
+    fun isLoggedIn(): Boolean {
+        return prefs.isLoggedIn()
     }
 
     fun logout() {

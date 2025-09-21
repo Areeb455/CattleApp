@@ -1,6 +1,5 @@
 package com.cattlelabs.cattleapp.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,8 +26,7 @@ fun ActionCard(
     modifier: Modifier = Modifier,
     color: Color = Green,
     icon: ImageVector,
-    text: String,
-    subtitle: String,
+    text: String?,
     onCardClick: () -> Unit
 ) {
     Card(
@@ -47,12 +43,14 @@ fun ActionCard(
         ) {
             Icon(imageVector = icon, contentDescription = null)
             Spacer(modifier.width(8.dp))
-            Text(
-                text = text,
-                fontFamily = metropolisFamily,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+            if (text != null) {
+                Text(
+                    text = text,
+                    fontFamily = metropolisFamily,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }

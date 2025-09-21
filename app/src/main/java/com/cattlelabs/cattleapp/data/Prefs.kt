@@ -1,42 +1,90 @@
 package com.cattlelabs.cattleapp.data
 
 import android.content.Context
+import android.content.SharedPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Prefs(context: Context) {
-    private val prefs = context.getSharedPreferences("cattle_prefs", Context.MODE_PRIVATE)
+@Singleton
+class Prefs @Inject constructor(@ApplicationContext context: Context) {
 
-    fun saveSession(userId: String, userName: String, phoneNumber: String, location: String) {
-        prefs.edit()
-            .putString("user_id", userId)
-            .putString("user_name", userName)
-            .putString("phone_number", phoneNumber)
-            .putString("location", location)
-            .apply()
+    companion object {
+        private const val PREF_NAME = "cattle_prefs"
+        private const val KEY_USER_ID = "user_id"
+        private const val KEY_USER_NAME = "user_name"
+        private const val KEY_PHONE_NUMBER = "phone_number"
+        private const val KEY_LOCATION = "location"
+        private const val KEY_USER_LANGUAGE = "user_language"
+        private const val DEFAULT_LANGUAGE = "en"
     }
 
-    fun getSession(): String? {
-        val userId = prefs.getString("user_id", null)
-        return userId
+    private val prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+    fun saveSession(userId: String, userName: String, phoneNumber: String, location: String, userLanguage: String) {
+        prefs.edit().apply {
+            putString(KEY_USER_ID, userId)
+            putString(KEY_USER_NAME, userName)
+            putString(KEY_PHONE_NUMBER, phoneNumber)
+            putString(KEY_LOCATION, location)
+            putString(KEY_USER_LANGUAGE, userLanguage)
+            apply()
+        }
+    }
+
+    fun saveUserLanguage(languageCode: String) {
+        prefs.edit().putString(KEY_USER_LANGUAGE, languageCode).apply()
+    }
+
+    fun getUserLanguage(): String {
+        return prefs.getString(KEY_USER_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
+    }
+
+    fun getUserId(): String? {
+        return prefs.getString(KEY_USER_ID, null)
+    }
+
+    fun getUserName(): String? {
+        return prefs.getString(KEY_USER_NAME, null)
+    }
+
+    fun getLocation(): String? {
+        return prefs.getString(KEY_LOCATION, null)
+    }
+
+    fun getPhoneNumber(): String? {
+        return prefs.getString(KEY_PHONE_NUMBER, null)
+    }
+
+    fun isLoggedIn(): Boolean {
+        return !getUserId().isNullOrEmpty()
     }
 
     fun clearSession() {
         prefs.edit().clear().apply()
     }
 
-    fun getUserId(): String? {
-        return prefs.getString("user_id", null)
-    }
+    // Optional: Get user data as a data class
+    fun getUserSession(): UserSession? {
+        val userId = getUserId()
+        val userName = getUserName()
+        val phoneNumber = getPhoneNumber()
+        val location = getLocation()
+        val language = getUserLanguage()
 
-    fun getUserName(): String? {
-        return prefs.getString("user_name", "Guest")
+        return if (!userId.isNullOrEmpty()) {
+            UserSession(userId, userName, phoneNumber, location, language)
+        } else {
+            null
+        }
     }
-
-    fun getLocation(): String? {
-        return prefs.getString("location", null)
-    }
-
-    fun getPhoneNumber(): String? {
-        return prefs.getString("phone_number", null)
-    }
-
 }
+
+// Optional: Data class for user session
+data class UserSession(
+    val userId: String,
+    val userName: String?,
+    val phoneNumber: String?,
+    val location: String?,
+    val language: String
+)

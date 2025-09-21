@@ -11,14 +11,15 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cattlelabs.cattleapp.R
 import com.cattlelabs.cattleapp.ui.theme.Green
 import com.cattlelabs.cattleapp.ui.theme.LightGreen
 import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
@@ -37,7 +38,6 @@ fun PredictionItemCard(
         colors = CardDefaults.cardColors(
             containerColor = LightGreen
         ),
-        // ✅ Elevation added to give the card a shadow
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -47,18 +47,16 @@ fun PredictionItemCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Column for Breed Name and "View Details" link
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = breed ?: "Unknown Breed",
+                    text = breed ?: stringResource(R.string.past_records_unnamed),
                     fontFamily = metropolisFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
-                // Robust check for a valid, non-empty, non-"null" string breedId
                 if (!breedId.isNullOrBlank() && breedId != "null") {
                     Text(
-                        text = "View Details",
+                        text = stringResource(R.string.prediction_view_details),
                         fontFamily = metropolisFamily,
                         color = Green,
                         fontWeight = FontWeight.SemiBold,
@@ -70,7 +68,6 @@ fun PredictionItemCard(
                 }
             }
 
-            // Safely display accuracy, showing a placeholder if null
             val accuracyText = accuracy?.let { "%.2f%%".format(it) } ?: "-- %"
 
             Text(

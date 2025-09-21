@@ -15,6 +15,6 @@ class CattleApp : Application() {
     override fun onCreate() {
         super.onCreate()
         val languageCode = prefs.getUserLanguage()
-        LocaleHelper.updateLocale(this, languageCode)
+        LocaleHelper.updateLocale(languageCode)
     }
 }

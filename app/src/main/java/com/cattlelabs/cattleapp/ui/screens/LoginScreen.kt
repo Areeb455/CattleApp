@@ -118,7 +118,7 @@ fun LoginScreen(
                             onClick = {
                                 selectedLanguage = langName
                                 authViewModel.saveLanguagePreference(langCode)
-                                LocaleHelper.updateLocale(context, langCode)
+                                LocaleHelper.updateLocale(langCode)
                                 languageMenuExpanded = false
                             }
                         )

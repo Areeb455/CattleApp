@@ -137,6 +137,10 @@ dependencies {
 
     //AppCompat
     implementation("androidx.appcompat:appcompat:1.7.1")
+
+    // Splash Screen API
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
 }
 
 

@@ -100,6 +100,7 @@ fun HomeScreen(
                     item {
                         ActionCard(
                             color = Green,
+                            borderColor = LightGreen,
                             icon = Icons.Default.QrCodeScanner,
                             text = stringResource(R.string.home_scan_cattle),
                             modifier = Modifier.padding(16.dp)

@@ -2,6 +2,7 @@ package com.cattlelabs.cattleapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,21 +27,24 @@ import com.cattlelabs.cattleapp.ui.theme.metropolisFamily
 fun ActionCard(
     modifier: Modifier = Modifier,
     color: Color = Green,
+    borderColor: Color = Green,
     icon: ImageVector,
     text: String?,
     onCardClick: () -> Unit
 ) {
     Card(
         onClick = onCardClick,
+        shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .padding(vertical = 4.dp, horizontal = 4.dp)
-            .border(width = 2.dp, color = Green, shape = RoundedCornerShape(16.dp)),
+            .border(1.dp, borderColor, RoundedCornerShape(16.dp))
     ) {
         Row(
             Modifier
                 .background(color = color, shape = RoundedCornerShape(16.dp))
                 .padding(24.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(imageVector = icon, contentDescription = null)
             Spacer(modifier.width(8.dp))

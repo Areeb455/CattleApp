@@ -2,44 +2,15 @@ package com.cattlelabs.cattleapp.ui.screens
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawWithContent
@@ -55,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.cattlelabs.cattleapp.R
+import com.cattlelabs.cattleapp.data.BreedData
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.state.UiState
 import com.cattlelabs.cattleapp.ui.components.core.TopBar
@@ -78,37 +50,44 @@ fun CattleFormScreen(
     val addCattleState by viewModel.addCattleState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val currentLanguageCode = authViewModel.getCurrentLanguage()
 
+    // --- Translated Dropdown Options ---
+    val translatedSpeciesOptions = remember(currentLanguageCode) {
+        BreedData.allSpecies.map { it.getFor(currentLanguageCode) }
+    }
+    val translatedGenderOptions = remember(currentLanguageCode) {
+        BreedData.allGenders.map { it.getFor(currentLanguageCode) }
+    }
+    val translatedBreedOptions = remember(currentLanguageCode) {
+        BreedData.allBreeds.map { it.getFor(currentLanguageCode) }.sorted()
+    }
+
+    // --- Pre-fill form fields with translated values ---
+    val initialSelectedSpecies = remember(species, currentLanguageCode) {
+        if (species.isNullOrBlank()) "" else {
+            BreedData.allSpecies.find { it.en.equals(species, true) }?.getFor(currentLanguageCode) ?: species
+        }
+    }
+    val initialSelectedBreed = remember(breedName, currentLanguageCode) {
+        if (breedName.isNullOrBlank()) "" else {
+            BreedData.allBreeds.find { it.en.equals(breedName, true) }?.getFor(currentLanguageCode) ?: breedName
+        }
+    }
+
+    // --- Form Fields State ---
     var name by remember { mutableStateOf("") }
     var tagNumber by remember { mutableStateOf("") }
-    var selectedSpecies by remember { mutableStateOf(species ?: "") }
-    var selectedBreed by remember { mutableStateOf(breedName ?: "") }
+    var selectedSpecies by remember { mutableStateOf(initialSelectedSpecies) }
+    var selectedBreed by remember { mutableStateOf(initialSelectedBreed) }
     var selectedGender by remember { mutableStateOf("") }
     var dob by remember { mutableStateOf("") }
     var taggingDate by remember { mutableStateOf("") }
 
+    // --- Dropdown Expanded State ---
     var speciesExpanded by remember { mutableStateOf(false) }
     var genderExpanded by remember { mutableStateOf(false) }
     var breedExpanded by remember { mutableStateOf(false) }
-
-    val speciesOptions = listOf("Cow", "Buffalo")
-    val genderOptions = listOf("Male", "Female")
-    val initialBreedOptions = listOf(
-        "Alambadi", "Amritmahal", "Ayrshire", "Banni", "Bargur", "Bhadawari",
-        "Brown Swiss", "Dangi", "Deoni", "Gir", "Guernsey", "Hallikar", "Hariana",
-        "Holstein Friesian", "Jaffarabadi", "Jersey", "Kangayam", "Kankrej",
-        "Kasaragod", "Kenkatha", "Kherigarh", "Khillari", "Krishna Valley",
-        "Malnad Gidda", "Mehsana", "Murrah", "Nagori", "Nagpuri", "Nili Ravi",
-        "Nimari", "Ongole", "Pulikulam", "Rathi", "Red Dane", "Red Sindhi",
-        "Sahiwal", "Surti", "Tharparkar", "Toda", "Umblachery", "Vechur"
-    )
-    val breedOptions = remember(breedName) {
-        if (!breedName.isNullOrBlank() && breedName !in initialBreedOptions) {
-            listOf(breedName) + initialBreedOptions
-        } else {
-            initialBreedOptions
-        }
-    }
 
     val isFormValid by remember(tagNumber, selectedSpecies, selectedBreed) {
         derivedStateOf {
@@ -123,16 +102,14 @@ fun CattleFormScreen(
                 navController.popBackStack()
                 viewModel.resetAddCattleState()
             }
-
             is UiState.Failed -> {
                 snackbarHostState.showSnackbar("Error: ${state.message}")
                 viewModel.resetAddCattleState()
             }
-
             is UiState.InternetError -> {
+                snackbarHostState.showSnackbar("Please check your internet connection.")
                 viewModel.resetAddCattleState()
             }
-
             else -> {}
         }
     }
@@ -173,13 +150,10 @@ fun CattleFormScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(24.dp)) {
-                        FormTextField(
-                            labelResId = R.string.form_tag_number,
-                            value = tagNumber,
-                            onValueChange = { tagNumber = it })
+                        FormTextField(labelResId = R.string.form_tag_number, value = tagNumber, onValueChange = { tagNumber = it })
                         FormDropdown(
                             labelResId = R.string.form_species,
-                            options = speciesOptions,
+                            options = translatedSpeciesOptions,
                             selectedValue = selectedSpecies,
                             onValueChange = { selectedSpecies = it },
                             expanded = speciesExpanded,
@@ -187,32 +161,23 @@ fun CattleFormScreen(
                         )
                         FormDropdown(
                             labelResId = R.string.form_breed,
-                            options = breedOptions,
+                            options = translatedBreedOptions,
                             selectedValue = selectedBreed,
                             onValueChange = { selectedBreed = it },
                             expanded = breedExpanded,
                             onExpandedChange = { breedExpanded = it }
                         )
-                        FormTextField(
-                            labelResId = R.string.form_name,
-                            value = name,
-                            onValueChange = { name = it })
+                        FormTextField(labelResId = R.string.form_name, value = name, onValueChange = { name = it })
                         FormDropdown(
                             labelResId = R.string.form_gender,
-                            options = genderOptions,
+                            options = translatedGenderOptions,
                             selectedValue = selectedGender,
                             onValueChange = { selectedGender = it },
                             expanded = genderExpanded,
                             onExpandedChange = { genderExpanded = it }
                         )
-                        DateTextField(
-                            labelResId = R.string.form_dob,
-                            date = dob,
-                            onDateChange = { dob = it })
-                        DateTextField(
-                            labelResId = R.string.form_tagging_date,
-                            date = taggingDate,
-                            onDateChange = { taggingDate = it })
+                        DateTextField(labelResId = R.string.form_dob, date = dob, onDateChange = { dob = it })
+                        DateTextField(labelResId = R.string.form_tagging_date, date = taggingDate, onDateChange = { taggingDate = it })
                     }
                 }
 
@@ -222,36 +187,35 @@ fun CattleFormScreen(
                 Button(
                     onClick = {
                         val userId = authViewModel.getCurrentUserId()
-                        if (userId.isNullOrBlank()) {
+                        if (userId.isNullOrBlank()){
                             coroutineScope.launch { snackbarHostState.showSnackbar("Error: Could not identify user.") }
                             return@Button
                         }
-                        val currentDate =
-                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+                        val speciesInEnglish = BreedData.allSpecies.find { it.getFor(currentLanguageCode) == selectedSpecies }?.en ?: selectedSpecies
+                        val breedInEnglish = BreedData.allBreeds.find { it.getFor(currentLanguageCode) == selectedBreed }?.en ?: selectedBreed
+                        val genderInEnglish = BreedData.allGenders.find { it.getFor(currentLanguageCode) == selectedGender }?.en ?: selectedGender
+
+                        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                         val request = CattleRequest(
                             userId = userId,
                             tagNumber = tagNumber,
-                            species = selectedSpecies,
-                            breed = selectedBreed,
+                            species = speciesInEnglish,
+                            breed = breedInEnglish,
                             name = name.takeIf { it.isNotBlank() },
-                            sex = selectedGender.takeIf { it.isNotBlank() },
+                            sex = genderInEnglish.takeIf { it.isNotBlank() },
                             dob = dob.takeIf { it.isNotBlank() },
                             taggingDate = taggingDate.takeIf { it.isNotBlank() },
                             dataEntryDate = currentDate
                         )
                         viewModel.addCattle(request)
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
                     enabled = isFormValid && !isLoading,
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
                     } else {
                         Text(
                             text = stringResource(R.string.form_title),
@@ -267,11 +231,7 @@ fun CattleFormScreen(
 }
 
 @Composable
-private fun FormTextField(
-    @StringRes labelResId: Int,
-    value: String,
-    onValueChange: (String) -> Unit
-) {
+private fun FormTextField(@StringRes labelResId: Int, value: String, onValueChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
             text = stringResource(id = labelResId),
@@ -312,17 +272,13 @@ private fun FormDropdown(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { onExpandedChange(!expanded) }) {
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { onExpandedChange(!expanded) }) {
             OutlinedTextField(
                 value = selectedValue,
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth(),
+                modifier = Modifier.menuAnchor().fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
                 textStyle = TextStyle(fontFamily = metropolisFamily),
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
@@ -330,9 +286,7 @@ private fun FormDropdown(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface
                 )
             )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { onExpandedChange(false) }) {
+            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { onExpandedChange(false) }) {
                 options.forEach { option ->
                     DropdownMenuItem(
                         text = { Text(option, fontFamily = metropolisFamily) },
@@ -348,11 +302,7 @@ private fun FormDropdown(
 }
 
 @Composable
-private fun DateTextField(
-    @StringRes labelResId: Int,
-    date: String,
-    onDateChange: (String) -> Unit
-) {
+private fun DateTextField(@StringRes labelResId: Int, date: String, onDateChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
             text = stringResource(id = labelResId),
@@ -365,12 +315,7 @@ private fun DateTextField(
             value = date,
             onValueChange = onDateChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = {
-                Text(
-                    stringResource(R.string.form_date_placeholder),
-                    fontFamily = metropolisFamily
-                )
-            },
+            placeholder = { Text(stringResource(R.string.form_date_placeholder), fontFamily = metropolisFamily) },
             trailingIcon = { Icon(Icons.Default.CalendarToday, "Date") },
             shape = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),

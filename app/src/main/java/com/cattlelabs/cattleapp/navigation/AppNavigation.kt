@@ -90,16 +90,22 @@ fun AppNavigation(
         }
 
         composable(
-            route = "${CattleAppScreens.BreedPredictionScreen.route}/{encodedUri}",
+            route = "${CattleAppScreens.BreedPredictionScreen.route}/{encodedUri}?offline={offline}",
             arguments = listOf(
                 navArgument("encodedUri") { type = NavType.StringType },
+                navArgument("offline") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                },
             )
         ) { backStackEntry ->
             val encodedUri = backStackEntry.arguments?.getString("encodedUri")
+            val offline = backStackEntry.arguments?.getBoolean("offline") ?: false
 
             BreedPredictionScreen(
                 navController = navController,
                 encodedUri = encodedUri,
+                offline = offline,
             )
         }
 

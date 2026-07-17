@@ -55,6 +55,7 @@ import com.cattlelabs.cattleapp.viewmodel.CattleViewModel
 fun BreedPredictionScreen(
     navController: NavController,
     encodedUri: String?,
+    offline: Boolean = false,
     viewModel: CattleViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
@@ -65,7 +66,11 @@ fun BreedPredictionScreen(
     LaunchedEffect(key1 = encodedUri) {
         if (encodedUri != null && viewModel.predictionState.value is UiState.Idle) {
             val decodedUri = Uri.decode(encodedUri).toUri()
-            viewModel.uploadAndPredict(context, decodedUri)
+            if (offline) {
+                viewModel.classifyOnDevice(decodedUri)
+            } else {
+                viewModel.uploadAndPredict(context, decodedUri)
+            }
         }
     }
 
@@ -98,7 +103,11 @@ fun BreedPredictionScreen(
                             CircularProgressIndicator(color = Green)
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = stringResource(R.string.prediction_analyzing),
+                                text = if (offline) {
+                                    stringResource(R.string.prediction_analyzing_offline)
+                                } else {
+                                    stringResource(R.string.prediction_analyzing)
+                                },
                                 fontFamily = metropolisFamily,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.White

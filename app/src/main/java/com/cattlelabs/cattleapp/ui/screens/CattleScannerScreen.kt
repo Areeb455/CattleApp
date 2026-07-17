@@ -7,9 +7,12 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.*
@@ -17,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -26,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.cattlelabs.cattleapp.R
@@ -42,13 +47,18 @@ fun CattleScannerScreen(
 ) {
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var offlineMode by remember { mutableStateOf(false) }
+
+    fun navigateToPrediction(uri: Uri) {
+        val encodedUri = Uri.encode(uri.toString())
+        navController.navigate("${CattleAppScreens.BreedPredictionScreen.route}/$encodedUri?offline=$offlineMode")
+    }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success && imageUri != null) {
-                val encodedUri = Uri.encode(imageUri.toString())
-                navController.navigate("${CattleAppScreens.BreedPredictionScreen.route}/$encodedUri")
+                navigateToPrediction(imageUri!!)
             }
         }
     )
@@ -69,10 +79,7 @@ fun CattleScannerScreen(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
-            uri?.let {
-                val encodedUri = Uri.encode(it.toString())
-                navController.navigate("${CattleAppScreens.BreedPredictionScreen.route}/$encodedUri")
-            }
+            uri?.let { navigateToPrediction(it) }
         }
     )
 
@@ -130,7 +137,56 @@ fun CattleScannerScreen(
                             fontFamily = metropolisFamily,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(LightGreen)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = if (offlineMode) Icons.Default.CloudOff else Icons.Default.Cloud,
+                                    contentDescription = null,
+                                    tint = Green
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.scanner_offline_mode_title),
+                                        fontFamily = metropolisFamily,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp
+                                    )
+                                    Text(
+                                        text = if (offlineMode) {
+                                            stringResource(R.string.scanner_offline_mode_on)
+                                        } else {
+                                            stringResource(R.string.scanner_offline_mode_off)
+                                        },
+                                        fontFamily = metropolisFamily,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            Switch(
+                                checked = offlineMode,
+                                onCheckedChange = { offlineMode = it },
+                                colors = SwitchDefaults.colors(checkedTrackColor = Green)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
 
                         Button(
                             onClick = {

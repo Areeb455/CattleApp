@@ -35,9 +35,13 @@
     <string name="scanner_description">Choose a picture from your gallery or use the camera to identify a cattle breed.</string>
     <string name="scanner_open_camera">Open Camera</string>
     <string name="scanner_choose_gallery">Choose from Gallery</string>
+    <string name="scanner_offline_mode_title">Offline Scan</string>
+    <string name="scanner_offline_mode_on">On — runs on this device, no internet needed</string>
+    <string name="scanner_offline_mode_off">Off — uses the cloud for richer results</string>
 
     <string name="prediction_title">Breed Prediction</string>
     <string name="prediction_analyzing">Analyzing your image…</string>
+    <string name="prediction_analyzing_offline">Analyzing on this device…</string>
     <string name="prediction_top_results">Top Prediction Results</string>
     <string name="prediction_local_results">Also Found In Your Location</string>
     <string name="prediction_preparing">Preparing to analyze…</string>

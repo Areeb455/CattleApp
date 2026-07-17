@@ -29,8 +29,12 @@
     <string name="scanner_description">पशु की नस्ल की पहचान करने के लिए अपनी गैलरी से एक तस्वीर चुनें या कैमरे का उपयोग करें।</string>
     <string name="scanner_open_camera">कैमरा खोलें</string>
     <string name="scanner_choose_gallery">गैलरी से चुनें</string>
+    <string name="scanner_offline_mode_title">ऑफ़लाइन स्कैन</string>
+    <string name="scanner_offline_mode_on">चालू — इस डिवाइस पर चलता है, इंटरनेट की आवश्यकता नहीं</string>
+    <string name="scanner_offline_mode_off">बंद — बेहतर परिणामों के लिए क्लाउड का उपयोग करता है</string>
     <string name="prediction_title">नस्ल की भविष्यवाणी</string>
     <string name="prediction_analyzing">आपकी छवि का विश्लेषण हो रहा है…</string>
+    <string name="prediction_analyzing_offline">इस डिवाइस पर विश्लेषण हो रहा है…</string>
     <string name="prediction_top_results">शीर्ष भविष्यवाणी परिणाम</string>
     <string name="prediction_local_results">आपके स्थान में भी पाए गए</string>
     <string name="prediction_preparing">विश्लेषण के लिए तैयारी हो रही है…</string>

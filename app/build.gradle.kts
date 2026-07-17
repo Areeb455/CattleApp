@@ -46,6 +46,9 @@ android {
         buildConfig = true
         compose = true
     }
+    androidResources {
+        noCompress += "tflite"
+    }
 }
 
 dependencies {
@@ -140,6 +143,10 @@ dependencies {
 
     // Splash Screen API
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // On-device inference (offline breed scan)
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 
 }
 

@@ -8,9 +8,11 @@ import com.cattlelabs.cattleapp.data.model.BreedDetails
 import com.cattlelabs.cattleapp.data.model.Cattle
 import com.cattlelabs.cattleapp.data.model.CattleRequest
 import com.cattlelabs.cattleapp.data.model.CattleResponse
+import com.cattlelabs.cattleapp.data.model.Prediction
 import com.cattlelabs.cattleapp.data.model.PredictionBody
 import com.cattlelabs.cattleapp.data.repo.AuthRepo
 import com.cattlelabs.cattleapp.data.repo.CattleRepo
+import com.cattlelabs.cattleapp.ml.TFLiteBreedClassifier
 import com.cattlelabs.cattleapp.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CattleViewModel @Inject constructor(
     private val cattleRepository: CattleRepo,
-    private val authRepo: AuthRepo
+    private val authRepo: AuthRepo,
+    private val tfLiteBreedClassifier: TFLiteBreedClassifier
 ) : ViewModel() {
 
     private val _cattleListState = MutableStateFlow<UiState<List<Cattle>>>(UiState.Idle)
@@ -185,6 +188,36 @@ class CattleViewModel @Inject constructor(
         }
     }
 
+
+    /** Runs breed prediction entirely on-device using the bundled TFLite model — no network needed. */
+    fun classifyOnDevice(imageUri: Uri) {
+        viewModelScope.launch {
+            _predictionState.value = UiState.Loading
+
+            try {
+                val results = tfLiteBreedClassifier.classifyTopK(imageUri, k = 3)
+
+                if (results.isEmpty()) {
+                    _predictionState.value = UiState.Failed("Could not analyze this image on-device.")
+                    return@launch
+                }
+
+                val predictions = results.map { result ->
+                    Prediction(
+                        breedId = null,
+                        breed = result.breedNameEn,
+                        species = null,
+                        accuracy = result.confidencePercent,
+                        location = emptyList()
+                    )
+                }
+
+                _predictionState.value = UiState.Success(PredictionBody(predictions))
+            } catch (e: Exception) {
+                _predictionState.value = UiState.Failed("On-device analysis failed: ${e.message}")
+            }
+        }
+    }
 
     // Reset state functions
     fun resetAddCattleState() {

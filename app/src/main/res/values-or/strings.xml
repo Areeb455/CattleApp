@@ -29,8 +29,12 @@
     <string name="scanner_description">ପଶୁର ପ୍ରଜାତି ଚିହ୍ନିବା ପାଇଁ ଆପଣଙ୍କ ଗ୍ୟାଲେରୀରୁ ଏକ ଛବି ବାଛନ୍ତୁ କିମ୍ବା କ୍ୟାମେରା ବ୍ୟବହାର କରନ୍ତୁ।</string>
     <string name="scanner_open_camera">କ୍ୟାମେରା ଖୋଲନ୍ତୁ</string>
     <string name="scanner_choose_gallery">ଗ୍ୟାଲେରୀରୁ ବାଛନ୍ତୁ</string>
+    <string name="scanner_offline_mode_title">ଅଫଲାଇନ୍ ସ୍କାନ୍</string>
+    <string name="scanner_offline_mode_on">ଚାଲୁ — ଏହି ଡିଭାଇସରେ ଚାଲେ, ଇଣ୍ଟରନେଟ୍ ଆବଶ୍ୟକ ନାହିଁ</string>
+    <string name="scanner_offline_mode_off">ବନ୍ଦ — ଉନ୍ନତ ଫଳାଫଳ ପାଇଁ କ୍ଲାଉଡ୍ ବ୍ୟବହାର କରେ</string>
     <string name="prediction_title">ପ୍ରଜାତିର ଭବିଷ୍ୟବାଣୀ</string>
     <string name="prediction_analyzing">ଆପଣଙ୍କ ଛବି ବିଶ୍ଳେଷଣ କରାଯାଉଛି…</string>
+    <string name="prediction_analyzing_offline">ଏହି ଡିଭାଇସରେ ବିଶ୍ଳେଷଣ କରାଯାଉଛି…</string>
     <string name="prediction_top_results">ଶୀର୍ଷ ଭବିଷ୍ୟବାଣୀ ଫଳାଫଳ</string>
     <string name="prediction_local_results">ଆପଣଙ୍କ ସ୍ଥାନରେ ମଧ୍ୟ ମିଳିଲା</string>
     <string name="prediction_preparing">ବିଶ୍ଳେଷଣ ପାଇଁ ପ୍ରସ୍ତୁତ ହେଉଛି…</string>
